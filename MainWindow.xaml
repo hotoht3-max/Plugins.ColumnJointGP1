@@ -1,16 +1,11 @@
 ﻿<tsd:PluginWindowBase
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Apibim.Plugins.BuiltUpColumn"
-        xmlns:localUI="clr-namespace:Apibim.Plugins.BuiltUpColumn.UIControls"
         xmlns:tsd="clr-namespace:Tekla.Structures.Dialog;assembly=Tekla.Structures.Dialog"
-        xmlns:UIControls="clr-namespace:Tekla.Structures.Dialog.UIControls;assembly=Tekla.Structures.Dialog" 
-        x:Class="Apibim.Plugins.BuiltUpColumn.MainWindow"
-        mc:Ignorable="d"
-        Title="Сквозная колонна RAM (Alpha)" FontSize="14" Height="900" Width="1200">
-
+        xmlns:UIControls="clr-namespace:Tekla.Structures.Dialog.UIControls;assembly=Tekla.Structures.Dialog"
+        xmlns:localUI="clr-namespace:RAM.Plugins.ColumnJointGP1.UIControls"
+        x:Class="RAM.Plugins.ColumnJointGP1.MainWindow"
+        Title="RAM ColumnJointGP1 (Альфа)" FontSize="14" Height="650" Width="1050">
     <Grid>
         <Grid.Resources>
             <Style TargetType="TextBox">
@@ -33,7 +28,6 @@
                 <Setter Property="Margin" Value="5,0"/>
             </Style>
         </Grid.Resources>
-
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -43,13 +37,13 @@
         <localUI:HeaderSystemControl Grid.Row="0" Margin="0,5,0,5"/>
 
         <TabControl Grid.Row="1" Margin="5">
-
-            <TabItem Header="Общее">
+            <!-- ПЕРВАЯ ВКЛАДКА -->
+            <TabItem Header="Настройки узла">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <Grid Margin="10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" MinWidth="25"/>
-                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="220"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
@@ -65,1088 +59,158 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Позиционирование в плане" FontWeight="Bold" Margin="0,5,0,5"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Позиционирование и зазоры" FontWeight="Bold" Margin="0,5,0,5"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="Global_Dx" VerticalAlignment="Center"/>
-                        <Label Grid.Row="1" Grid.Column="1" Content="Смещение по оси X (Dx):" VerticalAlignment="Center" Margin="0,2"/>
-                        <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Global_Dx}" VerticalAlignment="Center" Height="24" Margin="0,2" VerticalContentAlignment="Center"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="Global_Dy" VerticalAlignment="Center"/>
-                        <Label Grid.Row="2" Grid.Column="1" Content="Смещение по оси Y (Dy):" VerticalAlignment="Center" Margin="0,2"/>
-                        <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding Global_Dy}" VerticalAlignment="Center" Height="24" Margin="0,2" VerticalContentAlignment="Center"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="3" Grid.Column="0" AttributeName="Global_Rot" VerticalAlignment="Center"/>
-                        <Label Grid.Row="3" Grid.Column="1" Content="Поворот колонны (Град):" VerticalAlignment="Center" Margin="0,2"/>
-                        <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding Global_Rot}" VerticalAlignment="Center" Height="24" Margin="0,2" VerticalContentAlignment="Center"/>
-
-                        <TextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Text="Габариты сечения" FontWeight="Bold" Margin="0,15,0,5"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="5" Grid.Column="0" AttributeName="Bcol" VerticalAlignment="Center"/>
-                        <Label Grid.Row="5" Grid.Column="1" Content="Ширина колонны (Bcol):" VerticalAlignment="Center" Margin="0,2"/>
-                        <TextBox Grid.Row="5" Grid.Column="2" Text="{Binding Bcol}" VerticalAlignment="Center" Height="24" Margin="0,2" VerticalContentAlignment="Center"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="6" Grid.Column="0" AttributeName="Br_Rot" VerticalAlignment="Center"/>
-                        <Label Grid.Row="6" Grid.Column="1" Content="Поворот ветвей (Br_Rot):" VerticalAlignment="Center" Margin="0,2"/>
-                        <TextBox Grid.Row="6" Grid.Column="2" Text="{Binding Br_Rot}" VerticalAlignment="Center" Height="24" Margin="0,2" VerticalContentAlignment="Center"/>
-
-                        <TextBlock Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2" Text="Высотные отметки" FontWeight="Bold" Margin="0,15,0,5"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="8" Grid.Column="0" AttributeName="Hcol_1" VerticalAlignment="Center"/>
-                        <Label Grid.Row="8" Grid.Column="1" Content="Отметка верха ветвей (Hcol_1):" VerticalAlignment="Center" Margin="0,2"/>
-                        <TextBox Grid.Row="8" Grid.Column="2" Text="{Binding Hcol_1}" VerticalAlignment="Center" Height="24" Margin="0,2" VerticalContentAlignment="Center"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="9" Grid.Column="0" AttributeName="Hcol_e1" VerticalAlignment="Center"/>
-                        <Label Grid.Row="9" Grid.Column="1" Content="Отметка низа (Hcol_e1):" VerticalAlignment="Center" Margin="0,2"/>
-                        <TextBox Grid.Row="9" Grid.Column="2" Text="{Binding Hcol_e1}" VerticalAlignment="Center" Height="24" Margin="0,2" VerticalContentAlignment="Center"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="10" Grid.Column="0" AttributeName="Hcol_e2" VerticalAlignment="Center"/>
-                        <Label Grid.Row="10" Grid.Column="1" Content="Уровень базы (Hcol_e2):" VerticalAlignment="Center" Margin="0,2"/>
-                        <TextBox Grid.Row="10" Grid.Column="2" Text="{Binding Hcol_e2}" VerticalAlignment="Center" Height="24" Margin="0,2" VerticalContentAlignment="Center"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="11" Grid.Column="0" AttributeName="Hcol_e3" VerticalAlignment="Center"/>
-                        <Label Grid.Row="11" Grid.Column="1" Content="Подрезка базы (Hcol_e3):" VerticalAlignment="Center" Margin="0,2"/>
-                        <TextBox Grid.Row="11" Grid.Column="2" Text="{Binding Hcol_e3}" VerticalAlignment="Center" Height="24" Margin="0,2" VerticalContentAlignment="Center"/>
-
-                        <TextBlock Grid.Row="12" Grid.Column="1" Grid.ColumnSpan="2" Text="Настройки оголовка" FontWeight="Bold" Margin="0,15,0,5"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="13" Grid.Column="0" AttributeName="Head_Type" VerticalAlignment="Center"/>
-                        <Label Grid.Row="13" Grid.Column="1" Content="Тип оголовка колонны:" VerticalAlignment="Center" Margin="0,2"/>
-                        <ComboBox Grid.Row="13" Grid.Column="2" SelectedIndex="{Binding Head_Type}" VerticalAlignment="Center" Height="24" Margin="0,2">
-                            <ComboBoxItem Content="0 - Отсутствует"/>
-                            <ComboBoxItem Content="1 - Надколонник"/>
-                            <ComboBoxItem Content="2 - Балка"/>
-                            <ComboBoxItem Content="3 - Балка + Надколонник"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="Offset_Web_Mode"/>
+                        <Label Grid.Row="1" Grid.Column="1" Content="Режим подрезки (колонна):"/>
+                        <ComboBox Grid.Row="1" Grid.Column="2" SelectedIndex="{Binding Offset_Web_Mode}">
+                            <ComboBoxItem Content="От плоскости стенки"/>
+                            <ComboBoxItem Content="От внешнего габарита"/>
                         </ComboBox>
 
-                        <localUI:SupColumnControl Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="3">
-                            <localUI:SupColumnControl.Style>
-                                <Style TargetType="localUI:SupColumnControl">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Head_Type}" Value="1">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Head_Type}" Value="3">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </localUI:SupColumnControl.Style>
-                        </localUI:SupColumnControl>
+                        <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="Offset_Web"/>
+                        <Label Grid.Row="2" Grid.Column="1" Content="Зазор до колонны:"/>
+                        <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding Offset_Web}"/>
 
-                        <localUI:HeadBeamControl Grid.Row="15" Grid.Column="0" Grid.ColumnSpan="3">
-                            <localUI:HeadBeamControl.Style>
-                                <Style TargetType="localUI:HeadBeamControl">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Head_Type}" Value="2">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Head_Type}" Value="3">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </localUI:HeadBeamControl.Style>
-                        </localUI:HeadBeamControl>
+                        <UIControls:WpfFilterCheckBox Grid.Row="3" Grid.Column="0" AttributeName="Offset_Gusset"/>
+                        <Label Grid.Row="3" Grid.Column="1" Content="Смещение фасонки:"/>
+                        <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding Offset_Gusset}"/>
 
+                        <UIControls:WpfFilterCheckBox Grid.Row="4" Grid.Column="0" AttributeName="Offset_Brace"/>
+                        <Label Grid.Row="4" Grid.Column="1" Content="Зазор до раскосов:"/>
+                        <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding Offset_Brace}"/>
+
+                        <TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Text="Углы фасонки (Пусто = 90 град.)" FontWeight="Bold" Margin="0,15,0,5"/>
+
+                        <UIControls:WpfFilterCheckBox Grid.Row="6" Grid.Column="0" AttributeName="Angle_Top"/>
+                        <Label Grid.Row="6" Grid.Column="1" Content="Угол верхнего реза:"/>
+                        <TextBox Grid.Row="6" Grid.Column="2" Text="{Binding Angle_Top}"/>
+
+                        <UIControls:WpfFilterCheckBox Grid.Row="7" Grid.Column="0" AttributeName="Straight_Top"/>
+                        <Label Grid.Row="7" Grid.Column="1" Content="Прямой участок (Верх):"/>
+                        <TextBox Grid.Row="7" Grid.Column="2" Text="{Binding Straight_Top}"/>
+
+                        <UIControls:WpfFilterCheckBox Grid.Row="8" Grid.Column="0" AttributeName="Angle_Bot"/>
+                        <Label Grid.Row="8" Grid.Column="1" Content="Угол нижнего реза:"/>
+                        <TextBox Grid.Row="8" Grid.Column="2" Text="{Binding Angle_Bot}"/>
+
+                        <UIControls:WpfFilterCheckBox Grid.Row="9" Grid.Column="0" AttributeName="Straight_Bot"/>
+                        <Label Grid.Row="9" Grid.Column="1" Content="Прямой участок (Низ):"/>
+                        <TextBox Grid.Row="9" Grid.Column="2" Text="{Binding Straight_Bot}"/>
+
+                        <TextBlock Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" Text="Атрибуты фасонки" FontWeight="Bold" Margin="0,15,0,5"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="11" Grid.Column="0" AttributeName="GP_Thickness"/>
+                        <Label Grid.Row="11" Grid.Column="1" Content="Толщина / Класс:"/>
+                        <StackPanel Grid.Row="11" Grid.Column="2" Orientation="Horizontal">
+                            <TextBox Width="50" Text="{Binding GP_Thickness}"/>
+                            <UIControls:WpfFilterCheckBox AttributeName="GP_Class" Margin="10,0,5,0"/>
+                            <TextBox Width="50" Text="{Binding GP_Class}"/>
+                        </StackPanel>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
 
-            <TabItem Header="Решетка">
+            <!-- ВТОРАЯ ВКЛАДКА -->
+            <TabItem Header="Типы раскосов">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <Grid Margin="5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" MinWidth="25"/>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                    <Grid Margin="10">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="120"/>
+                            <!-- Под эскиз -->
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Разбивка панелей" FontWeight="Bold" Margin="0,10,0,5"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="L_StepMode"/>
-                        <Label Grid.Row="1" Grid.Column="1" Content="Режим шага решетки:"/>
-                        <ComboBox Grid.Row="1" Grid.Column="2" SelectedIndex="{Binding L_StepMode}" Height="24" Margin="2">
-                            <ComboBoxItem Content="0 - Равномерный"/>
-                            <ComboBoxItem Content="1 - Ввод размеров (Массив)"/>
-                            <ComboBoxItem Content="2 - Кол-во панелей и отметки"/>
-                        </ComboBox>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="L_StepText"/>
-                        <Label Grid.Row="2" Grid.Column="1" Content="Массив / Отметки:"/>
-                        <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding L_StepText}" Height="24" Margin="2"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="3" Grid.Column="0" AttributeName="L_MinRemainder"/>
-                        <Label Grid.Row="3" Grid.Column="1" Content="Мин. остаток (мм):"/>
-                        <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding L_MinRemainder}" Height="24" Margin="2"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="4" Grid.Column="0" AttributeName="L_MergePanels"/>
-                        <Label Grid.Row="4" Grid.Column="1" Content="Захватить панелей (шт):"/>
-                        <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding L_MergePanels}" Height="24" Margin="2"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="5" Grid.Column="0" AttributeName="L_RemainPanels"/>
-                        <Label Grid.Row="5" Grid.Column="1" Content="Разбить хвост на (шт):"/>
-                        <TextBox Grid.Row="5" Grid.Column="2" Text="{Binding L_RemainPanels}" Height="24" Margin="2"/>
-
-                        <TextBlock Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="Управление геометрией" FontWeight="Bold" Margin="0,15,0,5"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="7" Grid.Column="0" AttributeName="L_Invert"/>
-                        <Label Grid.Row="7" Grid.Column="1" Content="Старт решетки:"/>
-                        <ComboBox Grid.Row="7" Grid.Column="2" SelectedIndex="{Binding L_Invert}" Height="24" Margin="2">
-                            <ComboBoxItem Content="От левой ветви (По умолч.)"/>
-                            <ComboBoxItem Content="От правой ветви (Инверсия)"/>
-                        </ComboBox>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="8" Grid.Column="0" AttributeName="L_Exclude"/>
-                        <Label Grid.Row="8" Grid.Column="1" Content="Удалить раскосы:"/>
-                        <TextBox Grid.Row="8" Grid.Column="2" Text="{Binding L_Exclude}" Height="24" Margin="2"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="9" Grid.Column="0" AttributeName="L_HoldPhase"/>
-                        <Label Grid.Row="9" Grid.Column="1" Content="При удалении:"/>
-                        <ComboBox Grid.Row="9" Grid.Column="2" SelectedIndex="{Binding L_HoldPhase}" Height="24" Margin="2">
-                            <ComboBoxItem Content="0 - Продолжать зигзаг"/>
-                            <ComboBoxItem Content="1 - Сохранять ветвь"/>
-                        </ComboBox>
-
-                        <TextBlock Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" Text="Расцентровка узлов" FontWeight="Bold" Margin="0,15,0,5"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="11" Grid.Column="0" AttributeName="L_Rasc"/>
-                        <Label Grid.Row="11" Grid.Column="1" Content="Базовая расцентровка:"/>
-                        <TextBox Grid.Row="11" Grid.Column="2" Text="{Binding L_Rasc}" Height="24" Margin="2"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="12" Grid.Column="0" AttributeName="L_Rasc_Base"/>
-                        <Label Grid.Row="12" Grid.Column="1" Content="Расцентровка базы:"/>
-                        <TextBox Grid.Row="12" Grid.Column="2" Text="{Binding L_Rasc_Base}" Height="24" Margin="2"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="13" Grid.Column="0" AttributeName="L_Rasc_Top"/>
-                        <Label Grid.Row="13" Grid.Column="1" Content="Расцентровка верха:"/>
-                        <TextBox Grid.Row="13" Grid.Column="2" Text="{Binding L_Rasc_Top}" Height="24" Margin="2"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="14" Grid.Column="0" AttributeName="L_RascOverrides"/>
-                        <Label Grid.Row="14" Grid.Column="1" Content="Исключения (Узел:Знак):"/>
-                        <TextBox Grid.Row="14" Grid.Column="2" Text="{Binding L_RascOverrides}" Height="24" Margin="2"/>
-
-                        <TextBlock Grid.Row="15" Grid.Column="1" Grid.ColumnSpan="2" Text="Параметры и позиционирование" FontWeight="Bold" Margin="0,15,0,5"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="16" Grid.Column="0" AttributeName="L_Type"/>
-                        <Label Grid.Row="16" Grid.Column="1" Content="Тип решетки:"/>
-                        <ComboBox Grid.Row="16" Grid.Column="2" SelectedIndex="{Binding L_Type, UpdateSourceTrigger=PropertyChanged}" Height="24" Margin="2">
-                            <ComboBoxItem Content="0 - Одинарная"/>
-                            <ComboBoxItem Content="1 - Сдвоенная"/>
-                        </ComboBox>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="17" Grid.Column="0" AttributeName="L_Offset"/>
-                        <Label Grid.Row="17" Grid.Column="1" Content="Рядовые раскосы:"/>
-                        <StackPanel Grid.Row="17" Grid.Column="2" Orientation="Horizontal" Margin="2">
-                            <Grid Width="160" Height="24">
-                                <Grid>
-                                    <Grid.Style>
-                                        <Style TargetType="Grid">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding L_Type}" Value="0"><Setter Property="Visibility" Value="Visible"/></DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Grid.Style>
-                                    <ComboBox SelectedIndex="{Binding L_Preset_Single}">
-                                        <ComboBoxItem Content="Пресет 1 (Уголок)"/>
-                                        <ComboBoxItem Content="Пресет 2 (Полка)"/>
-                                        <ComboBoxItem Content="Пресет 3 (Труба)"/>
-                                    </ComboBox>
-                                </Grid>
-
-                                <Grid>
-                                    <Grid.Style>
-                                        <Style TargetType="Grid">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding L_Type}" Value="1"><Setter Property="Visibility" Value="Visible"/></DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Grid.Style>
-                                    <ComboBox SelectedIndex="{Binding L_Preset_Double}">
-                                        <ComboBoxItem Content="Пресет 1"/>
-                                        <ComboBoxItem Content="Пресет 2"/>
-                                        <ComboBoxItem Content="Пресет 3"/>
-                                        <ComboBoxItem Content="Пресет 4"/>
-                                    </ComboBox>
-                                </Grid>
-                            </Grid>
-                            <UIControls:WpfFilterCheckBox AttributeName="L_Offset" Margin="10,0,5,0" VerticalAlignment="Center"/>
-                            <Label Content="Смещение:" VerticalAlignment="Center"/>
-                            <TextBox Text="{Binding L_Offset}" Width="60" Height="24"/>
-                        </StackPanel>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="18" Grid.Column="0" AttributeName="LS_Offset"/>
-                        <Label Grid.Row="18" Grid.Column="1" Content="Стыковые раскосы:"/>
-                        <StackPanel Grid.Row="18" Grid.Column="2" Orientation="Horizontal" Margin="2">
-                            <Grid Width="160" Height="24">
-                                <Grid>
-                                    <Grid.Style>
-                                        <Style TargetType="Grid">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding L_Type}" Value="0"><Setter Property="Visibility" Value="Visible"/></DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Grid.Style>
-                                    <ComboBox SelectedIndex="{Binding LS_Preset_Single}">
-                                        <ComboBoxItem Content="0 - Как рядовая" FontWeight="SemiBold"/>
-                                        <ComboBoxItem Content="Пресет 1 (Уголок)"/>
-                                        <ComboBoxItem Content="Пресет 2 (Полка)"/>
-                                        <ComboBoxItem Content="Пресет 3 (Труба)"/>
-                                    </ComboBox>
-                                </Grid>
-
-                                <Grid>
-                                    <Grid.Style>
-                                        <Style TargetType="Grid">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding L_Type}" Value="1"><Setter Property="Visibility" Value="Visible"/></DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Grid.Style>
-                                    <ComboBox SelectedIndex="{Binding LS_Preset_Double}">
-                                        <ComboBoxItem Content="0 - Как рядовая" FontWeight="SemiBold"/>
-                                        <ComboBoxItem Content="Пресет 1"/>
-                                        <ComboBoxItem Content="Пресет 2"/>
-                                        <ComboBoxItem Content="Пресет 3"/>
-                                        <ComboBoxItem Content="Пресет 4"/>
-                                    </ComboBox>
-                                </Grid>
-                            </Grid>
-                            <UIControls:WpfFilterCheckBox AttributeName="LS_Offset" Margin="10,0,5,0" VerticalAlignment="Center"/>
-                            <Label Content="Смещение:" VerticalAlignment="Center"/>
-                            <TextBox Text="{Binding LS_Offset}" Width="60" Height="24"/>
-                        </StackPanel>
-
-                        <TextBlock Grid.Row="19" Grid.Column="1" Grid.ColumnSpan="2" Text="Точечное переопределение (Узел:Смещение)" FontWeight="Bold" Margin="0,15,0,5"/>
-
-                        <StackPanel Grid.Row="20" Grid.Column="0" Grid.ColumnSpan="3">
-                            <StackPanel.Style>
-                                <Style TargetType="StackPanel">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding L_Type}" Value="0">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </StackPanel.Style>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" MinWidth="25"/>
-                                    <ColumnDefinition Width="150"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-                                
-                                <UIControls:WpfFilterCheckBox Grid.Row="0" Grid.Column="0" AttributeName="L_Single_Angle"/>
-                                <Label Grid.Row="0" Grid.Column="1" Content="Пресет 1 (Уголок):"/>
-                                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding L_Single_Angle}" Height="24" Margin="2" ToolTip="Пример: 1-5:25"/>
-                                
-                                <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="L_Single_Flange"/>
-                                <Label Grid.Row="1" Grid.Column="1" Content="Пресет 2 (Полка):"/>
-                                <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding L_Single_Flange}" Height="24" Margin="2"/>
-                                
-                                <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="L_Single_Pipe"/>
-                                <Label Grid.Row="2" Grid.Column="1" Content="Пресет 3 (Труба):"/>
-                                <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding L_Single_Pipe}" Height="24" Margin="2"/>
-                            </Grid>
-                        </StackPanel> 
-
-                        <StackPanel Grid.Row="21" Grid.Column="0" Grid.ColumnSpan="3">
-                            <StackPanel.Style>
-                                <Style TargetType="StackPanel">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding L_Type}" Value="1">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </StackPanel.Style>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" MinWidth="25"/>
-                                    <ColumnDefinition Width="150"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-
-                                <UIControls:WpfFilterCheckBox Grid.Row="0" Grid.Column="0" AttributeName="L_Double_P1"/>
-                                <Label Grid.Row="0" Grid.Column="1" Content="Пресет 1:"/>
-                                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding L_Double_P1}" Height="24" Margin="2" ToolTip="Пример: 1-5:25"/>
-
-                                <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="L_Double_P2"/>
-                                <Label Grid.Row="1" Grid.Column="1" Content="Пресет 2:"/>
-                                <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding L_Double_P2}" Height="24" Margin="2"/>
-
-                                <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="L_Double_P3"/>
-                                <Label Grid.Row="2" Grid.Column="1" Content="Пресет 3:"/>
-                                <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding L_Double_P3}" Height="24" Margin="2"/>
-
-                                <UIControls:WpfFilterCheckBox Grid.Row="3" Grid.Column="0" AttributeName="L_Double_P4"/>
-                                <Label Grid.Row="3" Grid.Column="1" Content="Пресет 4:"/>
-                                <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding L_Double_P4}" Height="24" Margin="2"/>
-                            </Grid>
-                        </StackPanel>
-
-                    </Grid>
-                </ScrollViewer>
-            </TabItem>
-
-            <TabItem Header="Планки">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <Grid Margin="5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" MinWidth="25"/>
-                            <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-
-                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Настройки планок по зонам (Фон)" FontWeight="Bold" Margin="0,10,0,5"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="S_Base_Preset"/>
-                        <Label Grid.Row="1" Grid.Column="1" Content="Планка в базе [Узел 1]:"/>
-                        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" Margin="2">
-                            <ComboBox SelectedIndex="{Binding S_Base_Preset}" Width="160" Height="24">
-                                <ComboBoxItem Content="0 - Нет"/>
-                                <ComboBoxItem Content="1 - Распорка (уголки)"/>
-                                <ComboBoxItem Content="2 - Распорка с листом"/>
-                                <ComboBoxItem Content="3 - Диафрагма (Тип 1)"/>
-                                <ComboBoxItem Content="4 - Диафрагма (Тип 2)"/>
-                            </ComboBox>
-
-                            <StackPanel Orientation="Horizontal">
-                                <StackPanel.Style>
-                                    <Style TargetType="StackPanel">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding S_Base_Preset}" Value="1">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding S_Base_Preset}" Value="2">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </StackPanel.Style>
-
-                                <UIControls:WpfFilterCheckBox AttributeName="S_Base_Pos" Margin="10,0,5,0" VerticalAlignment="Center"/>
-                                <Grid Width="150" Height="24">
-                                    <Grid>
-                                        <Grid.Style>
-                                            <Style TargetType="Grid">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding L_Type}" Value="0">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Grid.Style>
-                                        <ComboBox SelectedIndex="{Binding S_Base_Pos}">
-                                            <ComboBoxItem Content="0 - Как решетка" FontWeight="SemiBold"/>
-                                            <ComboBoxItem Content="Пресет 1 (Уголок)"/>
-                                            <ComboBoxItem Content="Пресет 2 (Полка)"/>
-                                            <ComboBoxItem Content="Пресет 3 (Труба)"/>
-                                            <ComboBoxItem Visibility="Collapsed" Content="Hidden"/>
-                                        </ComboBox>
-                                    </Grid>
-                                    <Grid>
-                                        <Grid.Style>
-                                            <Style TargetType="Grid">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding L_Type}" Value="1">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Grid.Style>
-                                        <ComboBox SelectedIndex="{Binding S_Base_Pos}">
-                                            <ComboBoxItem Content="0 - Как решетка" FontWeight="SemiBold"/>
-                                            <ComboBoxItem Content="Пресет 1"/>
-                                            <ComboBoxItem Content="Пресет 2"/>
-                                            <ComboBoxItem Content="Пресет 3"/>
-                                            <ComboBoxItem Content="Пресет 4"/>
-                                        </ComboBox>
-                                    </Grid>
-                                </Grid>
-
-                                <UIControls:WpfFilterCheckBox AttributeName="S_Base_Offset" Margin="10,0,5,0" VerticalAlignment="Center"/>
-                                <Label Content="Смещение:" VerticalAlignment="Center"/>
-                                <TextBox Text="{Binding S_Base_Offset}" Width="50" Height="24"/>
-                            </StackPanel>
-                        </StackPanel>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="S_Top_Preset"/>
-                        <Label Grid.Row="2" Grid.Column="1" Content="Планка в верхушке [Узел N]:"/>
-                        <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" Margin="2">
-                            <ComboBox SelectedIndex="{Binding S_Top_Preset}" Width="160" Height="24">
-                                <ComboBoxItem Content="0 - Нет"/>
-                                <ComboBoxItem Content="1 - Распорка (уголки)"/>
-                                <ComboBoxItem Content="2 - Распорка с листом"/>
-                                <ComboBoxItem Content="3 - Диафрагма (Тип 1)"/>
-                                <ComboBoxItem Content="4 - Диафрагма (Тип 2)"/>
-                            </ComboBox>
-                            <StackPanel Orientation="Horizontal">
-                                <StackPanel.Style>
-                                    <Style TargetType="StackPanel">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding S_Top_Preset}" Value="1">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding S_Top_Preset}" Value="2">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </StackPanel.Style>
-                                <UIControls:WpfFilterCheckBox AttributeName="S_Top_Pos" Margin="10,0,5,0" VerticalAlignment="Center"/>
-                                <Grid Width="150" Height="24">
-                                    <Grid>
-                                        <Grid.Style>
-                                            <Style TargetType="Grid">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding L_Type}" Value="0">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Grid.Style>
-                                        <ComboBox SelectedIndex="{Binding S_Top_Pos}">
-                                            <ComboBoxItem Content="0 - Как решетка" FontWeight="SemiBold"/>
-                                            <ComboBoxItem Content="Пресет 1 (Уголок)"/>
-                                            <ComboBoxItem Content="Пресет 2 (Полка)"/>
-                                            <ComboBoxItem Content="Пресет 3 (Труба)"/>
-                                            <ComboBoxItem Visibility="Collapsed" Content="Hidden"/>
-                                        </ComboBox>
-                                    </Grid>
-                                    <Grid>
-                                        <Grid.Style>
-                                            <Style TargetType="Grid">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding L_Type}" Value="1">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Grid.Style>
-                                        <ComboBox SelectedIndex="{Binding S_Top_Pos}">
-                                            <ComboBoxItem Content="0 - Как решетка" FontWeight="SemiBold"/>
-                                            <ComboBoxItem Content="Пресет 1"/>
-                                            <ComboBoxItem Content="Пресет 2"/>
-                                            <ComboBoxItem Content="Пресет 3"/>
-                                            <ComboBoxItem Content="Пресет 4"/>
-                                        </ComboBox>
-                                    </Grid>
-                                </Grid>
-                                <UIControls:WpfFilterCheckBox AttributeName="S_Top_Offset" Margin="10,0,5,0" VerticalAlignment="Center"/>
-                                <Label Content="Смещение:" VerticalAlignment="Center"/>
-                                <TextBox Text="{Binding S_Top_Offset}" Width="50" Height="24"/>
-                            </StackPanel>
-                        </StackPanel>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="3" Grid.Column="0" AttributeName="S_Splice_Preset"/>
-                        <Label Grid.Row="3" Grid.Column="1" Content="Планки у стыков ветвей:"/>
-                        <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal" Margin="2">
-                            <ComboBox SelectedIndex="{Binding S_Splice_Preset}" Width="160" Height="24">
-                                <ComboBoxItem Content="0 - Нет"/>
-                                <ComboBoxItem Content="1 - Распорка (уголки)"/>
-                                <ComboBoxItem Content="2 - Распорка с листом"/>
-                                <ComboBoxItem Content="3 - Диафрагма (Тип 1)"/>
-                                <ComboBoxItem Content="4 - Диафрагма (Тип 2)"/>
-                            </ComboBox>
-                            <StackPanel Orientation="Horizontal">
-                                <StackPanel.Style>
-                                    <Style TargetType="StackPanel">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding S_Splice_Preset}" Value="1">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding S_Splice_Preset}" Value="2">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </StackPanel.Style>
-                                <UIControls:WpfFilterCheckBox AttributeName="S_Splice_Pos" Margin="10,0,5,0" VerticalAlignment="Center"/>
-                                <Grid Width="150" Height="24">
-                                    <Grid>
-                                        <Grid.Style>
-                                            <Style TargetType="Grid">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding L_Type}" Value="0">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Grid.Style>
-                                        <ComboBox SelectedIndex="{Binding S_Splice_Pos}">
-                                            <ComboBoxItem Content="0 - Как решетка" FontWeight="SemiBold"/>
-                                            <ComboBoxItem Content="Пресет 1 (Уголок)"/>
-                                            <ComboBoxItem Content="Пресет 2 (Полка)"/>
-                                            <ComboBoxItem Content="Пресет 3 (Труба)"/>
-                                            <ComboBoxItem Visibility="Collapsed" Content="Hidden"/>
-                                        </ComboBox>
-                                    </Grid>
-                                    <Grid>
-                                        <Grid.Style>
-                                            <Style TargetType="Grid">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding L_Type}" Value="1">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Grid.Style>
-                                        <ComboBox SelectedIndex="{Binding S_Splice_Pos}">
-                                            <ComboBoxItem Content="0 - Как решетка" FontWeight="SemiBold"/>
-                                            <ComboBoxItem Content="Пресет 1"/>
-                                            <ComboBoxItem Content="Пресет 2"/>
-                                            <ComboBoxItem Content="Пресет 3"/>
-                                            <ComboBoxItem Content="Пресет 4"/>
-                                        </ComboBox>
-                                    </Grid>
-                                </Grid>
-                                <UIControls:WpfFilterCheckBox AttributeName="S_Splice_Offset" Margin="10,0,5,0" VerticalAlignment="Center"/>
-                                <Label Content="Смещение:" VerticalAlignment="Center"/>
-                                <TextBox Text="{Binding S_Splice_Offset}" Width="50" Height="24"/>
-                            </StackPanel>
-                        </StackPanel>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="4" Grid.Column="0" AttributeName="S_KeyElev_Preset"/>
-                        <Label Grid.Row="4" Grid.Column="1" Content="На ключевых отметках:"/>
-                        <StackPanel Grid.Row="4" Grid.Column="2" Orientation="Horizontal" Margin="2">
-                            <ComboBox SelectedIndex="{Binding S_KeyElev_Preset}" Width="160" Height="24" ToolTip="Срабатывает на отметках из списка шагов решетки">
-                                <ComboBoxItem Content="0 - Нет"/>
-                                <ComboBoxItem Content="1 - Распорка (уголки)"/>
-                                <ComboBoxItem Content="2 - Распорка с листом"/>
-                                <ComboBoxItem Content="3 - Диафрагма (Тип 1)"/>
-                                <ComboBoxItem Content="4 - Диафрагма (Тип 2)"/>
-                            </ComboBox>
-                            <StackPanel Orientation="Horizontal">
-                                <StackPanel.Style>
-                                    <Style TargetType="StackPanel">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding S_KeyElev_Preset}" Value="1">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding S_KeyElev_Preset}" Value="2">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </StackPanel.Style>
-                                <UIControls:WpfFilterCheckBox AttributeName="S_KeyElev_Pos" Margin="10,0,5,0" VerticalAlignment="Center"/>
-                                <Grid Width="150" Height="24">
-                                    <Grid>
-                                        <Grid.Style>
-                                            <Style TargetType="Grid">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding L_Type}" Value="0">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Grid.Style>
-                                        <ComboBox SelectedIndex="{Binding S_KeyElev_Pos}">
-                                            <ComboBoxItem Content="0 - Как решетка" FontWeight="SemiBold"/>
-                                            <ComboBoxItem Content="Пресет 1 (Уголок)"/>
-                                            <ComboBoxItem Content="Пресет 2 (Полка)"/>
-                                            <ComboBoxItem Content="Пресет 3 (Труба)"/>
-                                            <ComboBoxItem Visibility="Collapsed" Content="Hidden"/>
-                                        </ComboBox>
-                                    </Grid>
-                                    <Grid>
-                                        <Grid.Style>
-                                            <Style TargetType="Grid">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding L_Type}" Value="1">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Grid.Style>
-                                        <ComboBox SelectedIndex="{Binding S_KeyElev_Pos}">
-                                            <ComboBoxItem Content="0 - Как решетка" FontWeight="SemiBold"/>
-                                            <ComboBoxItem Content="Пресет 1"/>
-                                            <ComboBoxItem Content="Пресет 2"/>
-                                            <ComboBoxItem Content="Пресет 3"/>
-                                            <ComboBoxItem Content="Пресет 4"/>
-                                        </ComboBox>
-                                    </Grid>
-                                </Grid>
-                                <UIControls:WpfFilterCheckBox AttributeName="S_KeyElev_Offset" Margin="10,0,5,0" VerticalAlignment="Center"/>
-                                <Label Content="Смещение:" VerticalAlignment="Center"/>
-                                <TextBox Text="{Binding S_KeyElev_Offset}" Width="50" Height="24"/>
-                            </StackPanel>
-                        </StackPanel>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="5" Grid.Column="0" AttributeName="S_Preset"/>
-                        <Label Grid.Row="5" Grid.Column="1" Content="Рядовые планки:"/>
-                        <StackPanel Grid.Row="5" Grid.Column="2" Orientation="Horizontal" Margin="2">
-                            <ComboBox SelectedIndex="{Binding S_Preset}" Width="160" Height="24">
-                                <ComboBoxItem Content="0 - Нет"/>
-                                <ComboBoxItem Content="1 - Распорка (уголки)"/>
-                                <ComboBoxItem Content="2 - Распорка с листом"/>
-                                <ComboBoxItem Content="3 - Диафрагма (Тип 1)"/>
-                                <ComboBoxItem Content="4 - Диафрагма (Тип 2)"/>
-                            </ComboBox>
-                            <StackPanel Orientation="Horizontal">
-                                <StackPanel.Style>
-                                    <Style TargetType="StackPanel">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding S_Preset}" Value="1">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding S_Preset}" Value="2">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </StackPanel.Style>
-                                <UIControls:WpfFilterCheckBox AttributeName="S_Main_Pos" Margin="10,0,5,0" VerticalAlignment="Center"/>
-                                <Grid Width="150" Height="24">
-                                    <Grid>
-                                        <Grid.Style>
-                                            <Style TargetType="Grid">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding L_Type}" Value="0">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Grid.Style>
-                                        <ComboBox SelectedIndex="{Binding S_Main_Pos}">
-                                            <ComboBoxItem Content="0 - Как решетка" FontWeight="SemiBold"/>
-                                            <ComboBoxItem Content="Пресет 1 (Уголок)"/>
-                                            <ComboBoxItem Content="Пресет 2 (Полка)"/>
-                                            <ComboBoxItem Content="Пресет 3 (Труба)"/>
-                                            <ComboBoxItem Visibility="Collapsed" Content="Hidden"/>
-                                        </ComboBox>
-                                    </Grid>
-                                    <Grid>
-                                        <Grid.Style>
-                                            <Style TargetType="Grid">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding L_Type}" Value="1">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Grid.Style>
-                                        <ComboBox SelectedIndex="{Binding S_Main_Pos}">
-                                            <ComboBoxItem Content="0 - Как решетка" FontWeight="SemiBold"/>
-                                            <ComboBoxItem Content="Пресет 1"/>
-                                            <ComboBoxItem Content="Пресет 2"/>
-                                            <ComboBoxItem Content="Пресет 3"/>
-                                            <ComboBoxItem Content="Пресет 4"/>
-                                        </ComboBox>
-                                    </Grid>
-                                </Grid>
-                                <UIControls:WpfFilterCheckBox AttributeName="S_Main_Offset" Margin="10,0,5,0" VerticalAlignment="Center"/>
-                                <Label Content="Смещение:" VerticalAlignment="Center"/>
-                                <TextBox Text="{Binding S_Main_Offset}" Width="50" Height="24"/>
-                            </StackPanel>
-                        </StackPanel>
-
-                        <TextBlock Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="Переопределение узлов (Каскад)" FontWeight="Bold" Margin="0,15,0,5"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="7" Grid.Column="0" AttributeName="S_NodesAngle"/>
-                        <Label Grid.Row="7" Grid.Column="1" Content="Узлы уголков [Тип 1]:"/>
-                        <TextBox Grid.Row="7" Grid.Column="2" Text="{Binding S_NodesAngle}" Height="24" Margin="2"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="8" Grid.Column="0" AttributeName="S_NodesAnglePlate"/>
-                        <Label Grid.Row="8" Grid.Column="1" Content="Узлы уголков с листом [Тип 2]:"/>
-                        <TextBox Grid.Row="8" Grid.Column="2" Text="{Binding S_NodesAnglePlate}" Height="24" Margin="2"/>
-
-                        <TextBlock Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2" Text="Точечное переопределение распорок (Узел:Смещение)" FontWeight="SemiBold" Foreground="DarkBlue" Margin="0,15,0,5"/>
-
-                        <StackPanel Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3">
-                            <StackPanel.Style>
-                                <Style TargetType="StackPanel">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding L_Type}" Value="0">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </StackPanel.Style>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" MinWidth="25"/>
-                                    <ColumnDefinition Width="200"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-
-                                <UIControls:WpfFilterCheckBox Grid.Row="0" Grid.Column="0" AttributeName="S_Pos_Preset1"/>
-                                <Label Grid.Row="0" Grid.Column="1" Content="Пресет 1 (Уголок):"/>
-                                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding S_Pos_Preset1}" Height="24" Margin="2" ToolTip="Пример: 1-5:25"/>
-
-                                <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="S_Pos_Preset2"/>
-                                <Label Grid.Row="1" Grid.Column="1" Content="Пресет 2 (Полка):"/>
-                                <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding S_Pos_Preset2}" Height="24" Margin="2"/>
-
-                                <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="S_Pos_Preset3"/>
-                                <Label Grid.Row="2" Grid.Column="1" Content="Пресет 3 (Труба):"/>
-                                <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding S_Pos_Preset3}" Height="24" Margin="2"/>
-                            </Grid>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="3">
-                            <StackPanel.Style>
-                                <Style TargetType="StackPanel">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding L_Type}" Value="1">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </StackPanel.Style>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" MinWidth="25"/>
-                                    <ColumnDefinition Width="200"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-
-                                <UIControls:WpfFilterCheckBox Grid.Row="0" Grid.Column="0" AttributeName="S_Pos_Preset1"/>
-                                <Label Grid.Row="0" Grid.Column="1" Content="Пресет 1:"/>
-                                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding S_Pos_Preset1}" Height="24" Margin="2" ToolTip="Пример: 1-5:25"/>
-
-                                <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="S_Pos_Preset2"/>
-                                <Label Grid.Row="1" Grid.Column="1" Content="Пресет 2:"/>
-                                <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding S_Pos_Preset2}" Height="24" Margin="2"/>
-
-                                <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="S_Pos_Preset3"/>
-                                <Label Grid.Row="2" Grid.Column="1" Content="Пресет 3:"/>
-                                <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding S_Pos_Preset3}" Height="24" Margin="2"/>
-
-                                <UIControls:WpfFilterCheckBox Grid.Row="3" Grid.Column="0" AttributeName="S_Pos_Preset4"/>
-                                <Label Grid.Row="3" Grid.Column="1" Content="Пресет 4:"/>
-                                <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding S_Pos_Preset4}" Height="24" Margin="2"/>
-                            </Grid>
-                        </StackPanel>
-
-                        <TextBlock Grid.Row="12" Grid.Column="1" Grid.ColumnSpan="2" Text="Диафрагмы и Исключения" FontWeight="Bold" Margin="0,15,0,5"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="13" Grid.Column="0" AttributeName="S_NodesD1"/>
-                        <Label Grid.Row="13" Grid.Column="1" Content="Узлы диафрагм (Тип 1) [Тип 3]:"/>
-                        <TextBox Grid.Row="13" Grid.Column="2" Text="{Binding S_NodesD1}" Height="24" Margin="2"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="14" Grid.Column="0" AttributeName="S_NodesD2"/>
-                        <Label Grid.Row="14" Grid.Column="1" Content="Узлы диафрагм (Тип 2) [Тип 4]:"/>
-                        <TextBox Grid.Row="14" Grid.Column="2" Text="{Binding S_NodesD2}" Height="24" Margin="2"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="15" Grid.Column="0" AttributeName="S_NodesExcludePlate"/>
-                        <Label Grid.Row="15" Grid.Column="1" Content="Исключить листы (Тип 2 -> 1):"/>
-                        <TextBox Grid.Row="15" Grid.Column="2" Text="{Binding S_NodesExcludePlate}" Height="24" Margin="2"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="16" Grid.Column="0" AttributeName="S_NodesExclude"/>
-                        <Label Grid.Row="16" Grid.Column="1" Content="Глобально исключить узлы:" Foreground="DarkRed" FontWeight="SemiBold"/>
-                        <TextBox Grid.Row="16" Grid.Column="2" Text="{Binding S_NodesExclude}" Height="24" Margin="2"/>
-
-                        <localUI:DiaphragmPositioningControl Grid.Row="17" Grid.ColumnSpan="3" Loaded="DiaphragmPositioningControl_Loaded"/>
-                    </Grid>
-                </ScrollViewer>
-            </TabItem>
-
-            <TabItem Header="Стыки ветвей">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <Grid Margin="5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="0" Grid.Column="0" AttributeName="SplicesText"/>
-                        <Label Grid.Row="0" Grid.Column="1" Content="Отметки стыков в модели (Z):" FontWeight="Bold"/>
-                        <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding SplicesText}" ToolTip="Введите отметки через пробел (например: 6000 12000)"/>
-
-                        <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="Уровень 1 (Базовый для всех стыков)" FontWeight="Bold" Foreground="#FF0055A4" Margin="0,15,0,5"/>
-                        <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="Splice1Component"/>
-                        <UIControls:WpfFilterCheckBox Grid.Row="3" Grid.Column="0" AttributeName="Splice1Preset"/>
-                        <localUI:ComponentSelectorControl Grid.Row="2" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" ComponentText="{Binding Splice1Component, Mode=TwoWay}" PresetText="{Binding Splice1Preset, Mode=TwoWay}"/>
-
-                        <TextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Text="Уровень 2 (Переопределить выбранные)" FontWeight="Bold" Margin="0,15,0,5"/>
-                        <UIControls:WpfFilterCheckBox Grid.Row="5" Grid.Column="0" AttributeName="Splice2Indexes"/>
-                        <Label Grid.Row="5" Grid.Column="1" Content="Номера стыков (например: 2 4):"/>
-                        <TextBox Grid.Row="5" Grid.Column="2" Text="{Binding Splice2Indexes}"/>
-                        <UIControls:WpfFilterCheckBox Grid.Row="6" Grid.Column="0" AttributeName="Splice2Component"/>
-                        <UIControls:WpfFilterCheckBox Grid.Row="7" Grid.Column="0" AttributeName="Splice2Preset"/>
-                        <localUI:ComponentSelectorControl Grid.Row="6" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" ComponentText="{Binding Splice2Component, Mode=TwoWay}" PresetText="{Binding Splice2Preset, Mode=TwoWay}"/>
-
-                        <TextBlock Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" Text="Уровень 3 (Переопределить выбранные)" FontWeight="Bold" Margin="0,15,0,5"/>
-                        <UIControls:WpfFilterCheckBox Grid.Row="9" Grid.Column="0" AttributeName="Splice3Indexes"/>
-                        <Label Grid.Row="9" Grid.Column="1" Content="Номера стыков:"/>
-                        <TextBox Grid.Row="9" Grid.Column="2" Text="{Binding Splice3Indexes}"/>
-                        <UIControls:WpfFilterCheckBox Grid.Row="10" Grid.Column="0" AttributeName="Splice3Component"/>
-                        <UIControls:WpfFilterCheckBox Grid.Row="11" Grid.Column="0" AttributeName="Splice3Preset"/>
-                        <localUI:ComponentSelectorControl Grid.Row="10" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" ComponentText="{Binding Splice3Component, Mode=TwoWay}" PresetText="{Binding Splice3Preset, Mode=TwoWay}"/>
-
-                        <TextBlock Grid.Row="12" Grid.Column="1" Grid.ColumnSpan="2" Text="Уровень 4 (Переопределить выбранные)" FontWeight="Bold" Margin="0,15,0,5"/>
-                        <UIControls:WpfFilterCheckBox Grid.Row="13" Grid.Column="0" AttributeName="Splice4Indexes"/>
-                        <Label Grid.Row="13" Grid.Column="1" Content="Номера стыков:"/>
-                        <TextBox Grid.Row="13" Grid.Column="2" Text="{Binding Splice4Indexes}"/>
-                        <UIControls:WpfFilterCheckBox Grid.Row="14" Grid.Column="0" AttributeName="Splice4Component"/>
-                        <UIControls:WpfFilterCheckBox Grid.Row="15" Grid.Column="0" AttributeName="Splice4Preset"/>
-                        <localUI:ComponentSelectorControl Grid.Row="14" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" ComponentText="{Binding Splice4Component, Mode=TwoWay}" PresetText="{Binding Splice4Preset, Mode=TwoWay}"/>
-
-                        <TextBlock Grid.Row="16" Grid.Column="1" Grid.ColumnSpan="2" Text="Стыки надколонника" FontWeight="Bold" Foreground="#FF0055A4" Margin="0,15,0,5"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="17" Grid.Column="0" AttributeName="Splice5Indexes" Visibility="Collapsed"/>
-                        <Label Grid.Row="17" Grid.Column="1" Content="Номера стыков:" Visibility="Collapsed"/>
-                        <TextBox Grid.Row="17" Grid.Column="2" Text="{Binding Splice5Indexes}" Visibility="Collapsed"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="18" Grid.Column="0" AttributeName="Splice5Component"/>
-                        <UIControls:WpfFilterCheckBox Grid.Row="19" Grid.Column="0" AttributeName="Splice5Preset"/>
-                        <localUI:ComponentSelectorControl Grid.Row="18" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" ComponentText="{Binding Splice5Component, Mode=TwoWay}" PresetText="{Binding Splice5Preset, Mode=TwoWay}"/>
-
-                    </Grid>
-                </ScrollViewer>
-            </TabItem>
-
-            <TabItem Header="Атрибуты">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                    <StackPanel Margin="10">
-
-                        <Grid Margin="0,0,0,10">
+                        <!-- Плейсхолдер для эскиза -->
+                        <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="1" Background="#F0F0F0" Margin="0,0,0,15">
+                            <TextBlock Text="[ МЕСТО ДЛЯ ЭСКИЗА ПАРАМЕТРОВ РАСКОСА ]" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Gray"/>
+                        </Border>
+
+                        <!-- Таблица -->
+                        <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="145"/>
-                                <ColumnDefinition Width="180"/>
-                                <ColumnDefinition Width="135"/>
-                                <ColumnDefinition Width="75"/>
-                                <ColumnDefinition Width="75"/>
-                                <ColumnDefinition Width="75"/>
-                                <ColumnDefinition Width="75"/>
-                                <ColumnDefinition Width="145"/>
-                                <ColumnDefinition Width="75"/>
-                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="30"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-                            <TextBlock Text="Элемент" FontWeight="Bold" Grid.Column="0" Margin="25,0,0,0"/>
-                            <TextBlock Text="Профиль" FontWeight="Bold" Grid.Column="1" Margin="20,0,0,0"/>
-                            <TextBlock Text="Материал" FontWeight="Bold" Grid.Column="2" Margin="20,0,0,0"/>
-                            <TextBlock Text="Преф. Дет" FontWeight="Bold" Grid.Column="3" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Поз. Дет" FontWeight="Bold" Grid.Column="4" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Преф. Сб" FontWeight="Bold" Grid.Column="5" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Поз. Сб" FontWeight="Bold" Grid.Column="6" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Имя (Tekla)" FontWeight="Bold" Grid.Column="7" Margin="20,0,0,0"/>
-                            <TextBlock Text="Класс" FontWeight="Bold" Grid.Column="8" HorizontalAlignment="Center"/>
+                            <!-- Заголовки -->
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="Класс" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="Шов (h)" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Row="0" Grid.Column="3" Text="Отступ (e1)" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Row="0" Grid.Column="4" Text="Отступ (e2)" FontWeight="Bold" HorizontalAlignment="Center"/>
+
+                            <!-- Строка 1 -->
+                            <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="B1_Class"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding B1_Class}"/>
+                            <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding B1_h}"/>
+                            <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding B1_e1}"/>
+                            <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding B1_e2}"/>
+
+                            <!-- Строка 2 -->
+                            <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="B2_Class"/>
+                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding B2_Class}"/>
+                            <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding B2_h}"/>
+                            <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding B2_e1}"/>
+                            <TextBox Grid.Row="2" Grid.Column="4" Text="{Binding B2_e2}"/>
+
+                            <!-- Строка 3 -->
+                            <UIControls:WpfFilterCheckBox Grid.Row="3" Grid.Column="0" AttributeName="B3_Class"/>
+                            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding B3_Class}"/>
+                            <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding B3_h}"/>
+                            <TextBox Grid.Row="3" Grid.Column="3" Text="{Binding B3_e1}"/>
+                            <TextBox Grid.Row="3" Grid.Column="4" Text="{Binding B3_e2}"/>
+
+                            <!-- Строка 4 -->
+                            <UIControls:WpfFilterCheckBox Grid.Row="4" Grid.Column="0" AttributeName="B4_Class"/>
+                            <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding B4_Class}"/>
+                            <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding B4_h}"/>
+                            <TextBox Grid.Row="4" Grid.Column="3" Text="{Binding B4_e1}"/>
+                            <TextBox Grid.Row="4" Grid.Column="4" Text="{Binding B4_e2}"/>
+
+                            <!-- Строка 5 -->
+                            <UIControls:WpfFilterCheckBox Grid.Row="5" Grid.Column="0" AttributeName="B5_Class"/>
+                            <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding B5_Class}"/>
+                            <TextBox Grid.Row="5" Grid.Column="2" Text="{Binding B5_h}"/>
+                            <TextBox Grid.Row="5" Grid.Column="3" Text="{Binding B5_e1}"/>
+                            <TextBox Grid.Row="5" Grid.Column="4" Text="{Binding B5_e2}"/>
                         </Grid>
 
-                        <localUI:PartAttributesRowControl RowLabel="Ветвь:"
-                            Profile="{Binding B_Profile}" ProfileAttr="B_Profile"
-                            Material="{Binding B_Material}" MaterialAttr="B_Material"
-                            PartPrefix="{Binding B_PartPref}" PartPrefixAttr="B_PartPref"
-                            PartStartNo="{Binding B_PartNo}" PartStartNoAttr="B_PartNo"
-                            AssemblyPrefix="{Binding B_AssyPref}" AssemblyPrefixAttr="B_AssyPref"
-                            AssemblyStartNo="{Binding B_AssyNo}" AssemblyStartNoAttr="B_AssyNo"
-                            PartName="{Binding B_Name}" PartNameAttr="B_Name"
-                            PartClass="{Binding B_Class}" PartClassAttr="B_Class"
-                            UdaAttr="B_UDA"/>
+                        <TextBlock Grid.Row="2" Text="Специальные классы (через пробел)" FontWeight="Bold" Margin="0,20,0,5"/>
 
-                        <localUI:PartAttributesRowControl RowLabel="Надколонник:"
-                            Profile="{Binding NK_Profile}" ProfileAttr="NK_Profile"
-                            Material="{Binding NK_Material}" MaterialAttr="NK_Material"
-                            PartPrefix="{Binding NK_PartPref}" PartPrefixAttr="NK_PartPref"
-                            PartStartNo="{Binding NK_PartNo}" PartStartNoAttr="NK_PartNo"
-                            AssemblyPrefix="{Binding NK_AssyPref}" AssemblyPrefixAttr="NK_AssyPref"
-                            AssemblyStartNo="{Binding NK_AssyNo}" AssemblyStartNoAttr="NK_AssyNo"
-                            PartName="{Binding NK_Name}" PartNameAttr="NK_Name"
-                            PartClass="{Binding NK_Class}" PartClassAttr="NK_Class"
-                            UdaAttr="NK_UDA"/>
+                        <Grid Grid.Row="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" MinWidth="25"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-                        <localUI:PartAttributesRowControl RowLabel="Балка:"
-                            Profile="{Binding HB_Profile}"
-                            Material="{Binding HB_Material}"
-                            PartPrefix="{Binding HB_PartPref}"
-                            PartStartNo="{Binding HB_PartNo}"
-                            AssemblyPrefix="{Binding HB_AssyPref}"
-                            AssemblyStartNo="{Binding HB_AssyNo}"
-                            PartName="{Binding HB_Name}"
-                            PartClass="{Binding HB_Class}"
-                            UdaAttr="{Binding HB_UDA}"/>
-                        
-                        <localUI:PartAttributesRowControl RowLabel="Диафрагма (Тип 1):"
-                            Profile="{Binding D_Profile}" ProfileAttr="D_Profile"
-                            Material="{Binding D_Material}" MaterialAttr="D_Material"
-                            PartPrefix="{Binding D_PartPref}" PartPrefixAttr="D_PartPref"
-                            PartStartNo="{Binding D_PartNo}" PartStartNoAttr="D_PartNo"
-                            AssemblyPrefix="{Binding D_AssyPref}" AssemblyPrefixAttr="D_AssyPref"
-                            AssemblyStartNo="{Binding D_AssyNo}" AssemblyStartNoAttr="D_AssyNo"
-                            PartName="{Binding D_Name}" PartNameAttr="D_Name"
-                            PartClass="{Binding D_Class}" PartClassAttr="D_Class"
-                            UdaAttr="D_UDA"/>
+                            <UIControls:WpfFilterCheckBox Grid.Row="0" Grid.Column="0" AttributeName="Class_Exclude"/>
+                            <Label Grid.Row="0" Grid.Column="1" Content="Исключаемые:"/>
+                            <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Class_Exclude}"/>
 
-                        <localUI:PartAttributesRowControl RowLabel="Диафрагма (Тип 2):"
-                            Profile="{Binding D2_Profile}" ProfileAttr="D2_Profile"
-                            Material="{Binding D2_Material}" MaterialAttr="D2_Material"
-                            PartPrefix="{Binding D2_PartPref}" PartPrefixAttr="D2_PartPref"
-                            PartStartNo="{Binding D2_PartNo}" PartStartNoAttr="D2_PartNo"
-                            AssemblyPrefix="{Binding D2_AssyPref}" AssemblyPrefixAttr="D2_AssyPref"
-                            AssemblyStartNo="{Binding D2_AssyNo}" AssemblyStartNoAttr="D2_AssyNo"
-                            PartName="{Binding D2_Name}" PartNameAttr="D2_Name"
-                            PartClass="{Binding D2_Class}" PartClassAttr="D2_Class"
-                            UdaAttr="D2_UDA"/>
-
-                        <localUI:PartAttributesRowControl RowLabel="Раскос рядовой:"
-                            Profile="{Binding L_Profile}" ProfileAttr="L_Profile"
-                            Material="{Binding L_Material}" MaterialAttr="L_Material"
-                            PartPrefix="{Binding L_PartPref}" PartPrefixAttr="L_PartPref"
-                            PartStartNo="{Binding L_PartNo}" PartStartNoAttr="L_PartNo"
-                            AssemblyPrefix="{Binding L_AssyPref}" AssemblyPrefixAttr="L_AssyPref"
-                            AssemblyStartNo="{Binding L_AssyNo}" AssemblyStartNoAttr="L_AssyNo"
-                            PartName="{Binding L_Name}" PartNameAttr="L_Name"
-                            PartClass="{Binding L_Class}" PartClassAttr="L_Class"
-                            UdaAttr="L_UDA"/>
-
-                        <localUI:PartAttributesRowControl RowLabel="Раскос стыковой:"
-                            Profile="{Binding LS_Profile}" ProfileAttr="LS_Profile"
-                            Material="{Binding LS_Material}" MaterialAttr="LS_Material"
-                            PartPrefix="{Binding LS_PartPref}" PartPrefixAttr="LS_PartPref"
-                            PartStartNo="{Binding LS_PartNo}" PartStartNoAttr="LS_PartNo"
-                            AssemblyPrefix="{Binding LS_AssyPref}" AssemblyPrefixAttr="LS_AssyPref"
-                            AssemblyStartNo="{Binding LS_AssyNo}" AssemblyStartNoAttr="LS_AssyNo"
-                            PartName="{Binding LS_Name}" PartNameAttr="LS_Name"
-                            PartClass="{Binding LS_Class}" PartClassAttr="LS_Class"
-                            UdaAttr="LS_UDA"/>
-
-                        <localUI:PartAttributesRowControl RowLabel="Распорка:"
-                            Profile="{Binding S_Profile}" ProfileAttr="S_Profile"
-                            Material="{Binding S_Material}" MaterialAttr="S_Material"
-                            PartPrefix="{Binding S_PartPref}" PartPrefixAttr="S_PartPref"
-                            PartStartNo="{Binding S_PartNo}" PartStartNoAttr="S_PartNo"
-                            AssemblyPrefix="{Binding S_AssyPref}" AssemblyPrefixAttr="S_AssyPref"
-                            AssemblyStartNo="{Binding S_AssyNo}" AssemblyStartNoAttr="S_AssyNo"
-                            PartName="{Binding S_Name}" PartNameAttr="S_Name"
-                            PartClass="{Binding S_Class}" PartClassAttr="S_Class"
-                            UdaAttr="S_UDA"/>
-
-                        <localUI:PlateAttributesRowControl RowLabel="Лист распорки:"
-                            Thickness="{Binding GP_Thickness}" ThicknessAttr="GP_Thickness"
-                            Material="{Binding GP_Material}" MaterialAttr="GP_Material"
-                            PartPrefix="{Binding GP_PartPref}" PartPrefixAttr="GP_PartPref"
-                            PartStartNo="{Binding GP_PartNo}" PartStartNoAttr="GP_PartNo"
-                            AssemblyPrefix="{Binding GP_AssyPref}" AssemblyPrefixAttr="GP_AssyPref"
-                            AssemblyStartNo="{Binding GP_AssyNo}" AssemblyStartNoAttr="GP_AssyNo"
-                            PartName="{Binding GP_Name}" PartNameAttr="GP_Name"
-                            PartClass="{Binding GP_Class}" PartClassAttr="GP_Class"
-                            UdaAttr="GP_UDA"/>
-
-                    </StackPanel>
+                            <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="Class_Splice"/>
+                            <Label Grid.Row="1" Grid.Column="1" Content="Стыковые:"/>
+                            <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Class_Splice}"/>
+                        </Grid>
+                    </Grid>
                 </ScrollViewer>
             </TabItem>
         </TabControl>

@@ -1,21 +1,14 @@
-﻿<UserControl x:Class="Apibim.Plugins.BuiltUpColumn.UIControls.HeaderSystemControl"
+﻿<UserControl x:Class="RAM.Plugins.ColumnJointGP1.UIControls.HeaderSystemControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid Margin="5">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-
             <ComboBox x:Name="PresetsCombo" Width="180" Height="24" VerticalContentAlignment="Center" Margin="0,0,5,0" />
-
             <Button Content="Загрузить" Width="80" Height="24" Margin="0,0,15,0" Click="Load_Click" FontWeight="SemiBold" Background="#FFE6F2FF"/>
-
             <Button Content="Сохранить" Width="80" Height="24" Margin="0,0,15,0" Click="Save_Click"/>
-
-            <TextBox x:Name="SaveNameBox" Width="150" Height="24" VerticalContentAlignment="Center" Margin="0,0,5,0" Text="standard" ToolTip="Имя для нового пресета"/>
-
+            <TextBox x:Name="SaveNameBox" Width="150" Height="24" VerticalContentAlignment="Center" Margin="0,0,5,0" Text="standard" ToolTip="Имя файла настроек"/>
             <Button Content="Сохранить как" Width="100" Height="24" Margin="0,0,30,0" Click="SaveAs_Click"/>
-
             <Button Content="? Справка" Width="80" Height="24" Click="Help_Click"/>
-
         </StackPanel>
     </Grid>
 </UserControl>

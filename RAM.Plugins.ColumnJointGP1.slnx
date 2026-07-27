@@ -1,0 +1,9 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="RAM.Plugins.ColumnJointGP1.csproj" Id="07226baa-eb89-4e15-b9e0-81d5069285fe">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
+</Solution>

@@ -1,8 +1,5 @@
-﻿namespace Apibim.Plugins.BuiltUpColumn.Models
+﻿namespace RAM.Plugins.ColumnJointGP1.Models
 {
-    /// <summary>
-    /// Универсальный контейнер атрибутов для любой детали колонны (Ветвь, Решетка, Диафрагма)
-    /// </summary>
     public class PartSettings
     {
         public string Profile { get; set; }

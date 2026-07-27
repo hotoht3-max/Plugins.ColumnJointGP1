@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Apibim.Plugins.BuiltUpColumn.Properties {
+namespace RAM.Plugins.ColumnJointGP1.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

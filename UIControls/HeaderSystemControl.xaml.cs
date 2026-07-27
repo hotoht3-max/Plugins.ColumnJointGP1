@@ -7,12 +7,12 @@ using System.Windows.Controls;
 using Tekla.Structures;
 using Tekla.Structures.Dialog;
 
-namespace Apibim.Plugins.BuiltUpColumn.UIControls
+namespace RAM.Plugins.ColumnJointGP1.UIControls
 {
     public partial class HeaderSystemControl : UserControl
     {
-        // Было: private const string PLUGIN_EXTENSION = "Apibim_BuiltUpColumn";
-        private const string PLUGIN_SUFFIX = ".Apibim.Plugins.BuiltUpColumn.MainWindow.xml";
+        private const string PLUGIN_EXTENSION = "RAM_ColumnJointGP1";
+        private const string PLUGIN_SUFFIX = ".RAM.Plugins.ColumnJointGP1.MainWindow.xml";
 
         public HeaderSystemControl()
         {
@@ -39,7 +39,7 @@ namespace Apibim.Plugins.BuiltUpColumn.UIControls
             }
             else
             {
-                MessageBox.Show("Выберите пресет из списка для сохранения.", "RAM BIM", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Введите имя файла.", "RAM BIM", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -47,7 +47,6 @@ namespace Apibim.Plugins.BuiltUpColumn.UIControls
         {
             string fileName = SaveNameBox.Text.Trim();
             if (string.IsNullOrEmpty(fileName)) return;
-
             GetWindow()?.SaveValues(fileName);
             RefreshPresets();
             PresetsCombo.SelectedItem = fileName;
@@ -55,16 +54,15 @@ namespace Apibim.Plugins.BuiltUpColumn.UIControls
 
         private void Help_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Сквозная колонна RAM BIM.\nВерсия: Alpha 1.1", "Справка", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Плагин узла колонны RAM BIM.\nВерсия: Alpha 1.0", "Справка", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        // --- БЕЗОПАСНЫЙ ПОИСК ПРЕСЕТОВ ---
         private void RefreshPresets()
         {
-            string currentSelection = PresetsCombo.SelectedItem as string;
+            // Исправлено: IDE0019
+            string currentSelection = PresetsCombo.SelectedItem?.ToString();
             var uniqueFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            // 1. Папка модели
             try
             {
                 string modelPath = new Tekla.Structures.Model.Model().GetInfo().ModelPath;
@@ -75,18 +73,14 @@ namespace Apibim.Plugins.BuiltUpColumn.UIControls
             }
             catch { }
 
-            // 2. Системные папки
             AddFilesFromEnvironment("XS_PROJECT", uniqueFiles);
             AddFilesFromEnvironment("XS_FIRM", uniqueFiles);
             AddFilesFromEnvironment("XS_SYSTEM", uniqueFiles);
 
-            // Сортировка и привязка
             var sortedList = uniqueFiles.ToList();
             sortedList.Sort();
-
             PresetsCombo.ItemsSource = sortedList;
 
-            // Восстанавливаем выбор
             if (currentSelection != null && sortedList.Contains(currentSelection))
                 PresetsCombo.SelectedItem = currentSelection;
             else if (sortedList.Contains("standard"))
@@ -101,9 +95,7 @@ namespace Apibim.Plugins.BuiltUpColumn.UIControls
             {
                 string paths = string.Empty;
                 TeklaStructuresSettings.GetAdvancedOption(envVarName, ref paths);
-
                 if (string.IsNullOrWhiteSpace(paths)) return;
-
                 foreach (var path in paths.Split(';'))
                 {
                     AddFilesFromDirectory(path.Trim(), fileSet);
@@ -118,14 +110,10 @@ namespace Apibim.Plugins.BuiltUpColumn.UIControls
             {
                 if (Directory.Exists(directory))
                 {
-                    // Ищем файлы, которые заканчиваются на наш длинный суффикс
                     var files = Directory.GetFiles(directory, $"*{PLUGIN_SUFFIX}");
                     foreach (var file in files)
                     {
-                        // Берем имя файла с расширением (standard.Apibim.Plugins...) 
-                        // и просто вырезаем из него этот хвост
                         string cleanName = Path.GetFileName(file).Replace(PLUGIN_SUFFIX, "");
-
                         if (!string.IsNullOrWhiteSpace(cleanName))
                         {
                             fileSet.Add(cleanName);
@@ -133,7 +121,7 @@ namespace Apibim.Plugins.BuiltUpColumn.UIControls
                     }
                 }
             }
-            catch { /* Игнорируем ошибки доступа к системным папкам */ }
+            catch { }
         }
     }
 }

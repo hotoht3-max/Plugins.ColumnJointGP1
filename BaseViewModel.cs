@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Apibim.Plugins.BuiltUpColumn
+namespace RAM.Plugins.ColumnJointGP1
 {
     public class BaseViewModel : INotifyPropertyChanged
     {

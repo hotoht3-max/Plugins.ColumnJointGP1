@@ -2,7 +2,7 @@
 using System.IO;
 using Tekla.Structures.Model;
 
-namespace Apibim.Plugins.BuiltUpColumn.Services
+namespace RAM.Plugins.ColumnJointGP1.Services
 {
     public enum LogLevel { Info, Warning, Error, Success }
 
@@ -17,7 +17,8 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                 var model = new Model();
                 if (model.GetConnectionStatus())
                 {
-                    _logFilePath = Path.Combine(model.GetInfo().ModelPath, "Apibim_BuiltUpColumn.log");
+                    // Лог будет писаться в папку модели под новым именем
+                    _logFilePath = Path.Combine(model.GetInfo().ModelPath, "RAM_ColumnJointGP1.log");
                 }
             }
             catch { }
@@ -26,7 +27,6 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
         public static void Write(string message, LogLevel level = LogLevel.Info)
         {
             if (string.IsNullOrEmpty(_logFilePath)) return;
-
             try
             {
                 string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
