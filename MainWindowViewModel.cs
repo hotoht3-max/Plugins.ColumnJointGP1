@@ -33,8 +33,10 @@ namespace RAM.Plugins.ColumnJointGP1
 		private string _gp_Name = "ФАСОНКА";
 		private string _gp_Class = "100";
 		private string _gp_UDA = "";
+        private int _gusset_Shape_Mode = 1;
+        private int _two_Brace_Mode = 0;
 
-		[StructuresDialog("Offset_Web", typeof(TD.Double))] public double Offset_Web { get => _offset_Web; set => Set(ref _offset_Web, value); }
+        [StructuresDialog("Offset_Web", typeof(TD.Double))] public double Offset_Web { get => _offset_Web; set => Set(ref _offset_Web, value); }
 		[StructuresDialog("Offset_Web_Mode", typeof(TD.Integer))] public int Offset_Web_Mode { get => _offset_Web_Mode; set => Set(ref _offset_Web_Mode, value); }
 		[StructuresDialog("Offset_Gusset", typeof(TD.Double))] public double Offset_Gusset { get => _offset_Gusset; set => Set(ref _offset_Gusset, value); }
 		[StructuresDialog("Offset_Brace", typeof(TD.Double))] public double Offset_Brace { get => _offset_Brace; set => Set(ref _offset_Brace, value); }
@@ -81,5 +83,8 @@ namespace RAM.Plugins.ColumnJointGP1
 		[StructuresDialog("GP_Name", typeof(TD.String))] public string GP_Name { get => _gp_Name; set => Set(ref _gp_Name, value); }
 		[StructuresDialog("GP_Class", typeof(TD.String))] public string GP_Class { get => _gp_Class; set => Set(ref _gp_Class, value); }
 		[StructuresDialog("GP_UDA", typeof(TD.String))] public string GP_UDA { get => _gp_UDA; set => Set(ref _gp_UDA, value); }
-	}
+        [StructuresDialog("Gusset_Shape_Mode", typeof(TD.Integer))] public int Gusset_Shape_Mode { get => _gusset_Shape_Mode; set => Set(ref _gusset_Shape_Mode, value); }
+        [StructuresDialog("Two_Brace_Mode", typeof(TD.Integer))]
+        public int Two_Brace_Mode { get => _two_Brace_Mode; set => Set(ref _two_Brace_Mode, value); }
+    }
 }

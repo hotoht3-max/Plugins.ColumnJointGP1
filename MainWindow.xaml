@@ -59,6 +59,9 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Позиционирование и зазоры" FontWeight="Bold" Margin="0,5,0,5"/>
@@ -82,28 +85,46 @@
                         <Label Grid.Row="4" Grid.Column="1" Content="Зазор до раскосов:"/>
                         <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding Offset_Brace}"/>
 
-                        <TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Text="Углы фасонки (Пусто = 90 град.)" FontWeight="Bold" Margin="0,15,0,5"/>
+                        <!-- НОВЫЙ БЛОК: Формообразование -->
+                        <TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Text="Формообразование" FontWeight="Bold" Margin="0,15,0,5"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="6" Grid.Column="0" AttributeName="Angle_Top"/>
-                        <Label Grid.Row="6" Grid.Column="1" Content="Угол верхнего реза:"/>
-                        <TextBox Grid.Row="6" Grid.Column="2" Text="{Binding Angle_Top}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="6" Grid.Column="0" AttributeName="Gusset_Shape_Mode"/>
+                        <Label Grid.Row="6" Grid.Column="1" Content="Форма (при 3-х раскосах):"/>
+                        <ComboBox Grid.Row="6" Grid.Column="2" SelectedIndex="{Binding Gusset_Shape_Mode}">
+                            <ComboBoxItem Content="Прямоугольная"/>
+                            <ComboBoxItem Content="Фигурная (Авто-скос)"/>
+                        </ComboBox>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="7" Grid.Column="0" AttributeName="Straight_Top"/>
-                        <Label Grid.Row="7" Grid.Column="1" Content="Прямой участок (Верх):"/>
-                        <TextBox Grid.Row="7" Grid.Column="2" Text="{Binding Straight_Top}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="7" Grid.Column="0" AttributeName="Two_Brace_Mode"/>
+                        <Label Grid.Row="7" Grid.Column="1" Content="Форма (Диагональ + Распорка):"/>
+                        <ComboBox Grid.Row="7" Grid.Column="2" SelectedIndex="{Binding Two_Brace_Mode}">
+                            <ComboBoxItem Content="Черновая (Ступень)"/>
+                            <ComboBoxItem Content="Скос по пикам"/>
+                        </ComboBox>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="8" Grid.Column="0" AttributeName="Angle_Bot"/>
-                        <Label Grid.Row="8" Grid.Column="1" Content="Угол нижнего реза:"/>
-                        <TextBox Grid.Row="8" Grid.Column="2" Text="{Binding Angle_Bot}"/>
+                        <TextBlock Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" Text="Углы фасонки (Пусто = Авто)" FontWeight="Bold" Margin="0,15,0,5"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="9" Grid.Column="0" AttributeName="Straight_Bot"/>
-                        <Label Grid.Row="9" Grid.Column="1" Content="Прямой участок (Низ):"/>
-                        <TextBox Grid.Row="9" Grid.Column="2" Text="{Binding Straight_Bot}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="9" Grid.Column="0" AttributeName="Angle_Top"/>
+                        <Label Grid.Row="9" Grid.Column="1" Content="Угол верхнего реза:"/>
+                        <TextBox Grid.Row="9" Grid.Column="2" Text="{Binding Angle_Top}"/>
 
-                        <TextBlock Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" Text="Атрибуты фасонки" FontWeight="Bold" Margin="0,15,0,5"/>
-                        <UIControls:WpfFilterCheckBox Grid.Row="11" Grid.Column="0" AttributeName="GP_Thickness"/>
-                        <Label Grid.Row="11" Grid.Column="1" Content="Толщина / Класс:"/>
-                        <StackPanel Grid.Row="11" Grid.Column="2" Orientation="Horizontal">
+                        <UIControls:WpfFilterCheckBox Grid.Row="10" Grid.Column="0" AttributeName="Straight_Top"/>
+                        <Label Grid.Row="10" Grid.Column="1" Content="Прямой участок (Верх):"/>
+                        <TextBox Grid.Row="10" Grid.Column="2" Text="{Binding Straight_Top}"/>
+
+                        <UIControls:WpfFilterCheckBox Grid.Row="11" Grid.Column="0" AttributeName="Angle_Bot"/>
+                        <Label Grid.Row="11" Grid.Column="1" Content="Угол нижнего реза:"/>
+                        <TextBox Grid.Row="11" Grid.Column="2" Text="{Binding Angle_Bot}"/>
+
+                        <UIControls:WpfFilterCheckBox Grid.Row="12" Grid.Column="0" AttributeName="Straight_Bot"/>
+                        <Label Grid.Row="12" Grid.Column="1" Content="Прямой участок (Низ):"/>
+                        <TextBox Grid.Row="12" Grid.Column="2" Text="{Binding Straight_Bot}"/>
+
+                        <TextBlock Grid.Row="13" Grid.Column="1" Grid.ColumnSpan="2" Text="Атрибуты фасонки" FontWeight="Bold" Margin="0,15,0,5"/>
+
+                        <UIControls:WpfFilterCheckBox Grid.Row="14" Grid.Column="0" AttributeName="GP_Thickness"/>
+                        <Label Grid.Row="14" Grid.Column="1" Content="Толщина / Класс:"/>
+                        <StackPanel Grid.Row="14" Grid.Column="2" Orientation="Horizontal">
                             <TextBox Width="50" Text="{Binding GP_Thickness}"/>
                             <UIControls:WpfFilterCheckBox AttributeName="GP_Class" Margin="10,0,5,0"/>
                             <TextBox Width="50" Text="{Binding GP_Class}"/>
@@ -111,7 +132,6 @@
                     </Grid>
                 </ScrollViewer>
             </TabItem>
-
             <!-- ВТОРАЯ ВКЛАДКА -->
             <TabItem Header="Типы раскосов">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">

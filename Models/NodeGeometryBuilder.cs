@@ -13,7 +13,7 @@ namespace RAM.Plugins.ColumnJointGP1.Services
     {
         public static void BuildNode(Part branch, List<Part> lacings, JointData data)
         {
-            Logger.Write("Вход в геометрическое ядро BuildNode (Исправленные Умные Дефолты)");
+            Logger.Write("Вход в геометрическое ядро BuildNode (Итерация 3: Right-Side Convex Hull)");
 
             if (lacings.Count == 0 || !(branch is Beam branchBeam)) return;
 
@@ -74,7 +74,6 @@ namespace RAM.Plugins.ColumnJointGP1.Services
 
                 // 3. АНАЛИЗ ФИЗИЧЕСКИХ ГРАНИЦ КОЛОННЫ
                 double maxBranchX = GetMaxProjection(branchBeam.GetSolid(), pCenter, v_X);
-
                 TeklaProfileHelper.GetActualDimensions(branchBeam, out _, out _, out double branchTw);
 
                 double limitWeb = (data.Offset_Web_Mode == 0)
@@ -150,114 +149,172 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                     }
                 }
 
-                // 5. ГЕНЕРАЦИЯ ПОЛИГОНА ФАСОНКИ
+                Func<Point, double> GetX = pt => new Vector(pt.X - pCenter.X, pt.Y - pCenter.Y, pt.Z - pCenter.Z).Dot(v_X);
+                Func<Point, double> GetZ = pt => new Vector(pt.X - pCenter.X, pt.Y - pCenter.Y, pt.Z - pCenter.Z).Dot(v_Z);
+                Func<double, double, Point> ToGlobal = (x, z) => {
+                    Point p = new Point(pCenter);
+                    p.Translate(v_X.X * x + v_Z.X * z, v_X.Y * x + v_Z.Y * z, v_X.Z * x + v_Z.Z * z);
+                    return p;
+                };
+
+                // 5. ГЕНЕРАЦИЯ ПОЛИГОНА ФАСОНКИ (STRATEGY ROUTER)
                 List<Point> finalPolygon = new List<Point>();
                 var topB = braces.First();
                 var botB = braces.Last();
 
-                // --- Верхний угол ---
-                double topW_x = new Vector(topB.TopWeldPt.X - pCenter.X, topB.TopWeldPt.Y - pCenter.Y, topB.TopWeldPt.Z - pCenter.Z).Dot(v_X);
-                double topW_y = new Vector(topB.TopWeldPt.X - pCenter.X, topB.TopWeldPt.Y - pCenter.Y, topB.TopWeldPt.Z - pCenter.Z).Dot(v_Z);
+                bool isRectangular = (data.Gusset_Shape_Mode == 0);
 
-                double rx_top, ry_top;
-
-                if (string.IsNullOrWhiteSpace(data.Angle_Top))
+                if (isRectangular)
                 {
-                    // ИСПРАВЛЕНИЕ: Раскос смотрит ВВЕРХ (ZAngle > 0) -> Горизонтальный рез
-                    if (topB.IsStrut || topB.ZAngle > 1e-4)
-                    {
-                        rx_top = -1; ry_top = 0;
-                    }
-                    else
-                    {
-                        double cx = -topB.BraceDir.Dot(v_X);
-                        double cy = -topB.BraceDir.Dot(v_Z);
-                        double newAngle = Math.Atan2(cy, cx);
-                        rx_top = Math.Cos(newAngle); ry_top = Math.Sin(newAngle);
-                    }
+                    // --- СТРАТЕГИЯ А: ПРЯМОУГОЛЬНИК ---
+                    double maxZ = braces.Max(b => Math.Max(GetZ(b.TopWeldPt), GetZ(b.BotWeldPt))) + data.Straight_Top;
+                    double minZ = braces.Min(b => Math.Min(GetZ(b.TopWeldPt), GetZ(b.BotWeldPt))) - data.Straight_Bot;
+                    double maxX = braces.Max(b => Math.Max(GetX(b.TopWeldPt), GetX(b.BotWeldPt)));
+
+                    finalPolygon.Add(ToGlobal(gussetStartX, maxZ));
+                    finalPolygon.Add(ToGlobal(maxX, maxZ));
+                    finalPolygon.Add(ToGlobal(maxX, minZ));
+                    finalPolygon.Add(ToGlobal(gussetStartX, minZ));
                 }
                 else
                 {
-                    double.TryParse(data.Angle_Top, out double angleDeg);
-                    double cx = -topB.BraceDir.Dot(v_X);
-                    double cy = -topB.BraceDir.Dot(v_Z);
-                    double newAngle = Math.Atan2(cy, cx) - (angleDeg * Math.PI / 180.0);
-                    rx_top = Math.Cos(newAngle); ry_top = Math.Sin(newAngle);
-                }
+                    // --- СТРАТЕГИЯ В: ФИГУРНАЯ ---
 
-                if (Math.Abs(rx_top) < 1e-4) rx_top = -1e-4;
-
-                double limitX_top = gussetStartX + data.Straight_Top;
-                double cornerY_top = topW_y + (ry_top / rx_top) * (limitX_top - topW_x);
-
-                Point pCornerTop = new Point(pCenter);
-                pCornerTop.Translate(v_X.X * limitX_top + v_Z.X * cornerY_top, v_X.Y * limitX_top + v_Z.Y * cornerY_top, v_X.Z * limitX_top + v_Z.Z * cornerY_top);
-
-                Point pColTop = new Point(pCenter);
-                pColTop.Translate(v_X.X * gussetStartX + v_Z.X * cornerY_top, v_X.Y * gussetStartX + v_Z.Y * cornerY_top, v_X.Z * gussetStartX + v_Z.Z * cornerY_top);
-
-                finalPolygon.Add(pColTop);
-                if (Math.Abs(data.Straight_Top) > 1e-3) finalPolygon.Add(pCornerTop);
-
-                // --- Швы раскосов ---
-                foreach (var b in braces)
-                {
-                    finalPolygon.Add(b.TopWeldPt);
-                    finalPolygon.Add(b.BotWeldPt);
-                }
-
-                // --- Нижний угол ---
-                double botW_x = new Vector(botB.BotWeldPt.X - pCenter.X, botB.BotWeldPt.Y - pCenter.Y, botB.BotWeldPt.Z - pCenter.Z).Dot(v_X);
-                double botW_y = new Vector(botB.BotWeldPt.X - pCenter.X, botB.BotWeldPt.Y - pCenter.Y, botB.BotWeldPt.Z - pCenter.Z).Dot(v_Z);
-
-                double rx_bot, ry_bot;
-
-                if (string.IsNullOrWhiteSpace(data.Angle_Bot))
-                {
-                    // ИСПРАВЛЕНИЕ: Раскос смотрит ВНИЗ (ZAngle < 0) -> Горизонтальный рез
-                    if (botB.IsStrut || botB.ZAngle < -1e-4)
+                    // --- ВЕРХНИЙ КРАЙ ---
+                    if (topB.IsSplice)
                     {
-                        rx_bot = -1; ry_bot = 0;
+                        finalPolygon.Add(ToGlobal(gussetStartX, GetZ(topB.TopWeldPt)));
                     }
                     else
                     {
-                        double cx = -botB.BraceDir.Dot(v_X);
-                        double cy = -botB.BraceDir.Dot(v_Z);
-                        double newAngle = Math.Atan2(cy, cx);
-                        rx_bot = Math.Cos(newAngle); ry_bot = Math.Sin(newAngle);
+                        CalculateCorner(pCenter, v_X, v_Z, topB, data.Angle_Top, data.Straight_Top, gussetStartX, true, out Point pCornerTop, out Point pColTop);
+                        finalPolygon.Add(pColTop);
+                        if (Math.Abs(data.Straight_Top) > 1e-3) finalPolygon.Add(pCornerTop);
+                    }
+
+                    // --- ЦЕНТР (Стыки раскосов) ---
+                    bool hasStrut = braces.Any(b => b.IsStrut);
+
+                    if (braces.Count == 2 && hasStrut && data.Two_Brace_Mode == 0)
+                    {
+                        // Ручная стратегия ступенчатой черновой фасонки для 2х раскосов
+                        var b0 = braces[0]; var b1 = braces[1];
+                        finalPolygon.Add(b0.TopWeldPt);
+
+                        double x0 = GetX(b0.BotWeldPt); double z0 = GetZ(b0.BotWeldPt);
+                        double x1 = GetX(b1.TopWeldPt); double z1 = GetZ(b1.TopWeldPt);
+                        double maxX = Math.Max(x0, x1);
+
+                        finalPolygon.Add(b0.BotWeldPt);
+                        finalPolygon.Add(ToGlobal(maxX, z0));
+                        finalPolygon.Add(ToGlobal(maxX, z1));
+                        finalPolygon.Add(b1.TopWeldPt);
+
+                        finalPolygon.Add(b1.BotWeldPt);
+                    }
+                    else
+                    {
+                        // Алгоритм выпуклой оболочки правого контура (Right-Side Convex Hull)
+                        // Он автоматически создает идеальные фаски для выпирающих раскосов и 
+                        // прямые скосы над утопленными, гарантированно покрывая заданный h.
+                        var pts2d = new List<Point>();
+                        foreach (var b in braces)
+                        {
+                            pts2d.Add(b.TopWeldPt);
+                            pts2d.Add(b.BotWeldPt);
+                        }
+
+                        // Сортировка: сверху вниз, затем слева направо
+                        pts2d = pts2d.OrderByDescending(p => GetZ(p)).ThenByDescending(p => GetX(p)).ToList();
+
+                        var hull = new List<Point>();
+                        foreach (var p in pts2d)
+                        {
+                            while (hull.Count >= 2)
+                            {
+                                var p1 = hull[hull.Count - 2];
+                                var p2 = hull[hull.Count - 1];
+                                var p3 = p;
+
+                                // Векторное произведение (Cross Product) для определения поворота
+                                double cross = (GetX(p2) - GetX(p1)) * (GetZ(p3) - GetZ(p2)) - (GetZ(p2) - GetZ(p1)) * (GetX(p3) - GetX(p2));
+
+                                // Если поворот левый или точки на одной прямой - удаляем "внутреннюю" точку шва
+                                if (cross >= -1e-5) hull.RemoveAt(hull.Count - 1);
+                                else break;
+                            }
+                            hull.Add(p);
+                        }
+
+                        finalPolygon.AddRange(hull);
+                    }
+
+                    // --- НИЖНИЙ КРАЙ ---
+                    if (botB.IsSplice)
+                    {
+                        finalPolygon.Add(ToGlobal(gussetStartX, GetZ(botB.BotWeldPt)));
+                    }
+                    else
+                    {
+                        CalculateCorner(pCenter, v_X, v_Z, botB, data.Angle_Bot, data.Straight_Bot, gussetStartX, false, out Point pCornerBot, out Point pColBot);
+                        if (Math.Abs(data.Straight_Bot) > 1e-3) finalPolygon.Add(pCornerBot);
+                        finalPolygon.Add(pColBot);
                     }
                 }
-                else
-                {
-                    double.TryParse(data.Angle_Bot, out double angleDeg);
-                    double cx = -botB.BraceDir.Dot(v_X);
-                    double cy = -botB.BraceDir.Dot(v_Z);
-                    double newAngle = Math.Atan2(cy, cx) + (angleDeg * Math.PI / 180.0);
-                    rx_bot = Math.Cos(newAngle); ry_bot = Math.Sin(newAngle);
-                }
-
-                if (Math.Abs(rx_bot) < 1e-4) rx_bot = -1e-4;
-
-                double limitX_bot = gussetStartX + data.Straight_Bot;
-                double cornerY_bot = botW_y + (ry_bot / rx_bot) * (limitX_bot - botW_x);
-
-                Point pCornerBot = new Point(pCenter);
-                pCornerBot.Translate(v_X.X * limitX_bot + v_Z.X * cornerY_bot, v_X.Y * limitX_bot + v_Z.Y * cornerY_bot, v_X.Z * limitX_bot + v_Z.Z * cornerY_bot);
-
-                Point pColBot = new Point(pCenter);
-                pColBot.Translate(v_X.X * gussetStartX + v_Z.X * cornerY_bot, v_X.Y * gussetStartX + v_Z.Y * cornerY_bot, v_X.Z * gussetStartX + v_Z.Z * cornerY_bot);
-
-                if (Math.Abs(data.Straight_Bot) > 1e-3) finalPolygon.Add(pCornerBot);
-                finalPolygon.Add(pColBot);
 
                 // --- РЕНДЕР ФАСОНКИ ---
                 CreateRoughGusset(finalPolygon, data);
-                Logger.Write("Фасонка успешно построена.");
+                Logger.Write("Успешное применение стратегии.");
             }
             catch (Exception ex)
             {
                 throw new Exception($"Сбой внутри BuildNode: {ex.Message}", ex);
             }
+        }
+
+        private static void CalculateCorner(Point pCenter, Vector v_X, Vector v_Z, BraceWrap brace, string angleStr, double straightLen, double gussetStartX, bool isTop, out Point cornerPt, out Point colPt)
+        {
+            Point weldPt = isTop ? brace.TopWeldPt : brace.BotWeldPt;
+            double w_x = new Vector(weldPt.X - pCenter.X, weldPt.Y - pCenter.Y, weldPt.Z - pCenter.Z).Dot(v_X);
+            double w_y = new Vector(weldPt.X - pCenter.X, weldPt.Y - pCenter.Y, weldPt.Z - pCenter.Z).Dot(v_Z);
+
+            double rx, ry;
+
+            if (string.IsNullOrWhiteSpace(angleStr))
+            {
+                bool isHorizontalDefault = isTop ? (brace.IsStrut || brace.ZAngle > 1e-4) : (brace.IsStrut || brace.ZAngle < -1e-4);
+                if (isHorizontalDefault)
+                {
+                    rx = -1; ry = 0;
+                }
+                else
+                {
+                    double cx = -brace.BraceDir.Dot(v_X);
+                    double cy = -brace.BraceDir.Dot(v_Z);
+                    double newAngle = Math.Atan2(cy, cx);
+                    rx = Math.Cos(newAngle); ry = Math.Sin(newAngle);
+                }
+            }
+            else
+            {
+                double.TryParse(angleStr, out double angleDeg);
+                double cx = -brace.BraceDir.Dot(v_X);
+                double cy = -brace.BraceDir.Dot(v_Z);
+                double sign = isTop ? -1.0 : 1.0;
+                double newAngle = Math.Atan2(cy, cx) + (sign * angleDeg * Math.PI / 180.0);
+                rx = Math.Cos(newAngle); ry = Math.Sin(newAngle);
+            }
+
+            if (Math.Abs(rx) < 1e-4) rx = -1e-4;
+
+            double limitX = gussetStartX + straightLen;
+            double cornerY = w_y + (ry / rx) * (limitX - w_x);
+
+            cornerPt = new Point(pCenter);
+            cornerPt.Translate(v_X.X * limitX + v_Z.X * cornerY, v_X.Y * limitX + v_Z.Y * cornerY, v_X.Z * limitX + v_Z.Z * cornerY);
+
+            colPt = new Point(pCenter);
+            colPt.Translate(v_X.X * gussetStartX + v_Z.X * cornerY, v_X.Y * gussetStartX + v_Z.Y * cornerY, v_X.Z * gussetStartX + v_Z.Z * cornerY);
         }
 
         private static double GetProfileRadius(Beam beam, Vector direction)

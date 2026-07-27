@@ -17,6 +17,11 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                 ? new string[0]
                 : data.Class_Exclude.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
+            // Парсим стыковые классы
+            var spliceList = string.IsNullOrWhiteSpace(data.Class_Splice)
+                ? new string[0]
+                : data.Class_Splice.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
             foreach (var part in lacings)
             {
                 if (!(part is Beam beam)) continue;
@@ -46,7 +51,8 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                     e1 = e1,
                     e2 = e2,
                     BraceDir = braceDir,
-                    ZAngle = braceDir.Dot(v_Z)
+                    ZAngle = braceDir.Dot(v_Z),
+                    IsSplice = spliceList.Contains(beam.Class) // Назначаем флаг
                 });
             }
 

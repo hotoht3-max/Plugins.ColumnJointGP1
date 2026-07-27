@@ -14,6 +14,9 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                 Offset_Gusset = data.Offset_Gusset,
                 Offset_Brace = data.Offset_Brace,
 
+                Gusset_Shape_Mode = data.Gusset_Shape_Mode,
+                Two_Brace_Mode = data.Two_Brace_Mode,
+
                 Angle_Top = data.Angle_Top,
                 Straight_Top = data.Straight_Top,
                 Angle_Bot = data.Angle_Bot,
@@ -38,7 +41,6 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                 }
             };
 
-            // Собираем таблицу в удобный список, игнорируя пустые классы
             AddBraceSetting(jointData.BraceTypes, data.B1_Class, data.B1_h, data.B1_e1, data.B1_e2);
             AddBraceSetting(jointData.BraceTypes, data.B2_Class, data.B2_h, data.B2_e1, data.B2_e2);
             AddBraceSetting(jointData.BraceTypes, data.B3_Class, data.B3_h, data.B3_e1, data.B3_e2);

@@ -60,6 +60,8 @@ namespace RAM.Plugins.ColumnJointGP1
         [StructuresField("GP_Name")] public string GP_Name = "ФАСОНКА";
         [StructuresField("GP_Class")] public string GP_Class = "100";
         [StructuresField("GP_UDA")] public string GP_UDA = "";
+        [StructuresField("Gusset_Shape_Mode")] public int Gusset_Shape_Mode = 1;
+        [StructuresField("Two_Brace_Mode")] public int Two_Brace_Mode = 0;
     }
 
     [Plugin("RAM_ColumnJointGP1")]
