@@ -13,7 +13,7 @@ namespace RAM.Plugins.ColumnJointGP1.Services
     {
         public static void BuildNode(Part branch, List<Part> lacings, JointData data)
         {
-            Logger.Write("Вход в геометрическое ядро BuildNode (Итерация 3: Right-Side Convex Hull)");
+            Logger.Write("Вход в геометрическое ядро BuildNode (Исправленный математический солвер)");
 
             if (lacings.Count == 0 || !(branch is Beam branchBeam)) return;
 
@@ -157,74 +157,108 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                     return p;
                 };
 
-                // 5. ГЕНЕРАЦИЯ ПОЛИГОНА ФАСОНКИ (STRATEGY ROUTER)
-                List<Point> finalPolygon = new List<Point>();
-                var topB = braces.First();
-                var botB = braces.Last();
+                // ИСПРАВЛЕННЫЙ GET_H_FACT (С правильной матрицей Крамера)
+                Func<Point, Vector, List<Point>, double> GetHFact = (rayOrigin, rayDir, poly) => {
+                    double Ox = GetX(rayOrigin), Oz = GetZ(rayOrigin);
+                    double Dx = rayDir.Dot(v_X), Dz = rayDir.Dot(v_Z);
+                    double maxT = double.MinValue;
+                    bool found = false;
 
-                bool isRectangular = (data.Gusset_Shape_Mode == 0);
-
-                if (isRectangular)
-                {
-                    // --- СТРАТЕГИЯ А: ПРЯМОУГОЛЬНИК ---
-                    double maxZ = braces.Max(b => Math.Max(GetZ(b.TopWeldPt), GetZ(b.BotWeldPt))) + data.Straight_Top;
-                    double minZ = braces.Min(b => Math.Min(GetZ(b.TopWeldPt), GetZ(b.BotWeldPt))) - data.Straight_Bot;
-                    double maxX = braces.Max(b => Math.Max(GetX(b.TopWeldPt), GetX(b.BotWeldPt)));
-
-                    finalPolygon.Add(ToGlobal(gussetStartX, maxZ));
-                    finalPolygon.Add(ToGlobal(maxX, maxZ));
-                    finalPolygon.Add(ToGlobal(maxX, minZ));
-                    finalPolygon.Add(ToGlobal(gussetStartX, minZ));
-                }
-                else
-                {
-                    // --- СТРАТЕГИЯ В: ФИГУРНАЯ ---
-
-                    // --- ВЕРХНИЙ КРАЙ ---
-                    if (topB.IsSplice)
+                    for (int j = 0; j < poly.Count; j++)
                     {
-                        finalPolygon.Add(ToGlobal(gussetStartX, GetZ(topB.TopWeldPt)));
-                    }
-                    else
-                    {
-                        CalculateCorner(pCenter, v_X, v_Z, topB, data.Angle_Top, data.Straight_Top, gussetStartX, true, out Point pCornerTop, out Point pColTop);
-                        finalPolygon.Add(pColTop);
-                        if (Math.Abs(data.Straight_Top) > 1e-3) finalPolygon.Add(pCornerTop);
-                    }
+                        Point p1 = poly[j];
+                        Point p2 = poly[(j + 1) % poly.Count];
 
-                    // --- ЦЕНТР (Стыки раскосов) ---
-                    bool hasStrut = braces.Any(b => b.IsStrut);
+                        double P1x = GetX(p1), P1z = GetZ(p1);
+                        double P2x = GetX(p2), P2z = GetZ(p2);
 
-                    if (braces.Count == 2 && hasStrut && data.Two_Brace_Mode == 0)
-                    {
-                        // Ручная стратегия ступенчатой черновой фасонки для 2х раскосов
-                        var b0 = braces[0]; var b1 = braces[1];
-                        finalPolygon.Add(b0.TopWeldPt);
+                        double Vx = P2x - P1x;
+                        double Vz = P2z - P1z;
 
-                        double x0 = GetX(b0.BotWeldPt); double z0 = GetZ(b0.BotWeldPt);
-                        double x1 = GetX(b1.TopWeldPt); double z1 = GetZ(b1.TopWeldPt);
-                        double maxX = Math.Max(x0, x1);
+                        double det = Vx * Dz - Vz * Dx;
+                        if (Math.Abs(det) < 1e-5) continue;
 
-                        finalPolygon.Add(b0.BotWeldPt);
-                        finalPolygon.Add(ToGlobal(maxX, z0));
-                        finalPolygon.Add(ToGlobal(maxX, z1));
-                        finalPolygon.Add(b1.TopWeldPt);
+                        double dX = P1x - Ox;
+                        double dZ = P1z - Oz;
 
-                        finalPolygon.Add(b1.BotWeldPt);
-                    }
-                    else
-                    {
-                        // Алгоритм выпуклой оболочки правого контура (Right-Side Convex Hull)
-                        // Он автоматически создает идеальные фаски для выпирающих раскосов и 
-                        // прямые скосы над утопленными, гарантированно покрывая заданный h.
-                        var pts2d = new List<Point>();
-                        foreach (var b in braces)
+                        // ИСПРАВЛЕНИЕ ОШИБКИ ЗНАКОВ:
+                        double t = (dZ * Vx - dX * Vz) / det;
+                        double s = (dZ * Dx - dX * Dz) / det;
+
+                        // s - положение точки на грани полигона (от 0 до 1). Допускаем микро-погрешность.
+                        if (s >= -1e-3 && s <= 1.001)
                         {
-                            pts2d.Add(b.TopWeldPt);
-                            pts2d.Add(b.BotWeldPt);
+                            if (!found || t > maxT)
+                            {
+                                maxT = t;
+                                found = true;
+                            }
+                        }
+                    }
+                    return found ? maxT : double.NaN;
+                };
+
+                // 5. ГЕНЕРАЦИЯ ПОЛИГОНА ФАСОНКИ (С ИТЕРАТИВНОЙ КАЛИБРОВКОЙ)
+                List<Point> finalPolygon = new List<Point>();
+                double[] shiftTop = new double[braces.Count];
+                double[] shiftBot = new double[braces.Count];
+
+                // Итеративный солвер (10 проходов)
+                for (int iter = 0; iter < 10; iter++)
+                {
+                    finalPolygon.Clear();
+                    var currentTopWeld = new List<Point>();
+                    var currentBotWeld = new List<Point>();
+
+                    for (int i = 0; i < braces.Count; i++)
+                    {
+                        var b = braces[i];
+                        Point cT = new Point(b.TopWeldPt);
+                        cT.Translate(b.BraceDir.X * shiftTop[i], b.BraceDir.Y * shiftTop[i], b.BraceDir.Z * shiftTop[i]);
+                        currentTopWeld.Add(cT);
+
+                        Point cB = new Point(b.BotWeldPt);
+                        cB.Translate(b.BraceDir.X * shiftBot[i], b.BraceDir.Y * shiftBot[i], b.BraceDir.Z * shiftBot[i]);
+                        currentBotWeld.Add(cB);
+                    }
+
+                    var topB = braces.First();
+                    var botB = braces.Last();
+                    bool isRectangular = (data.Gusset_Shape_Mode == 0);
+
+                    if (isRectangular)
+                    {
+                        double maxZ = braces.Select((b, i) => Math.Max(GetZ(currentTopWeld[i]), GetZ(currentBotWeld[i]))).Max() + data.Straight_Top;
+                        double minZ = braces.Select((b, i) => Math.Min(GetZ(currentTopWeld[i]), GetZ(currentBotWeld[i]))).Min() - data.Straight_Bot;
+                        double maxX = braces.Select((b, i) => Math.Max(GetX(currentTopWeld[i]), GetX(currentBotWeld[i]))).Max();
+
+                        finalPolygon.Add(ToGlobal(gussetStartX, maxZ));
+                        finalPolygon.Add(ToGlobal(maxX, maxZ));
+                        finalPolygon.Add(ToGlobal(maxX, minZ));
+                        finalPolygon.Add(ToGlobal(gussetStartX, minZ));
+                    }
+                    else
+                    {
+                        // --- ВЕРХНИЙ КРАЙ ---
+                        if (topB.IsSplice)
+                        {
+                            finalPolygon.Add(ToGlobal(gussetStartX, GetZ(currentTopWeld[0])));
+                        }
+                        else
+                        {
+                            CalculateCorner(pCenter, v_X, v_Z, topB, data.Angle_Top, data.Straight_Top, gussetStartX, true, currentTopWeld[0], out Point pCornerTop, out Point pColTop);
+                            finalPolygon.Add(pColTop);
+                            if (Math.Abs(data.Straight_Top) > 1e-3) finalPolygon.Add(pCornerTop);
                         }
 
-                        // Сортировка: сверху вниз, затем слева направо
+                        // --- ЦЕНТР: ЕДИНЫЙ АЛГОРИТМ ВЫПУКЛОЙ ОБОЛОЧКИ ДЛЯ ВСЕХ СИТУАЦИЙ ---
+                        var pts2d = new List<Point>();
+                        for (int i = 0; i < braces.Count; i++)
+                        {
+                            pts2d.Add(currentTopWeld[i]);
+                            pts2d.Add(currentBotWeld[i]);
+                        }
+
                         pts2d = pts2d.OrderByDescending(p => GetZ(p)).ThenByDescending(p => GetX(p)).ToList();
 
                         var hull = new List<Point>();
@@ -235,36 +269,72 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                                 var p1 = hull[hull.Count - 2];
                                 var p2 = hull[hull.Count - 1];
                                 var p3 = p;
-
-                                // Векторное произведение (Cross Product) для определения поворота
                                 double cross = (GetX(p2) - GetX(p1)) * (GetZ(p3) - GetZ(p2)) - (GetZ(p2) - GetZ(p1)) * (GetX(p3) - GetX(p2));
-
-                                // Если поворот левый или точки на одной прямой - удаляем "внутреннюю" точку шва
                                 if (cross >= -1e-5) hull.RemoveAt(hull.Count - 1);
                                 else break;
                             }
                             hull.Add(p);
                         }
-
                         finalPolygon.AddRange(hull);
+
+                        // --- НИЖНИЙ КРАЙ ---
+                        if (botB.IsSplice)
+                        {
+                            finalPolygon.Add(ToGlobal(gussetStartX, GetZ(currentBotWeld[braces.Count - 1])));
+                        }
+                        else
+                        {
+                            CalculateCorner(pCenter, v_X, v_Z, botB, data.Angle_Bot, data.Straight_Bot, gussetStartX, false, currentBotWeld[braces.Count - 1], out Point pCornerBot, out Point pColBot);
+                            if (Math.Abs(data.Straight_Bot) > 1e-3) finalPolygon.Add(pCornerBot);
+                            finalPolygon.Add(pColBot);
+                        }
                     }
 
-                    // --- НИЖНИЙ КРАЙ ---
-                    if (botB.IsSplice)
+                    // Если это последняя итерация - контур готов, выходим
+                    if (iter == 9) break;
+
+                    // --- ИЗМЕРЕНИЕ ОТКЛОНЕНИЙ И НАТЯЖКА (ПРЕДОХРАНИТЕЛЬ ОТ ВЗРЫВОВ) ---
+                    for (int i = 0; i < braces.Count; i++)
                     {
-                        finalPolygon.Add(ToGlobal(gussetStartX, GetZ(botB.BotWeldPt)));
-                    }
-                    else
-                    {
-                        CalculateCorner(pCenter, v_X, v_Z, botB, data.Angle_Bot, data.Straight_Bot, gussetStartX, false, out Point pCornerBot, out Point pColBot);
-                        if (Math.Abs(data.Straight_Bot) > 1e-3) finalPolygon.Add(pCornerBot);
-                        finalPolygon.Add(pColBot);
+                        var b = braces[i];
+                        Vector transDir = v_Y.Cross(b.BraceDir).GetNormal();
+                        double rTrans1 = GetMaxTransverseProjection(b.Beam.GetSolid(), pCenter, b.BraceDir, transDir);
+                        double rTrans2 = GetMaxTransverseProjection(b.Beam.GetSolid(), pCenter, b.BraceDir, transDir * -1.0);
+
+                        Point oTopEdge, oBotEdge;
+                        if (transDir.Dot(v_Z) > 0)
+                        {
+                            oTopEdge = new Point(b.CutOrigin); oTopEdge.Translate(transDir.X * rTrans1, transDir.Y * rTrans1, transDir.Z * rTrans1);
+                            oBotEdge = new Point(b.CutOrigin); oBotEdge.Translate(transDir.X * -rTrans2, transDir.Y * -rTrans2, transDir.Z * -rTrans2);
+                        }
+                        else
+                        {
+                            oTopEdge = new Point(b.CutOrigin); oTopEdge.Translate(transDir.X * -rTrans2, transDir.Y * -rTrans2, transDir.Z * -rTrans2);
+                            oBotEdge = new Point(b.CutOrigin); oBotEdge.Translate(transDir.X * rTrans1, transDir.Y * rTrans1, transDir.Z * rTrans1);
+                        }
+
+                        double hFactTop = GetHFact(oTopEdge, b.BraceDir, finalPolygon);
+                        double hFactBot = GetHFact(oBotEdge, b.BraceDir, finalPolygon);
+
+                        // Натягиваем внутренние точки, жестко ограничив максимальный шаг сдвига
+                        if (i > 0 && !double.IsNaN(hFactTop))
+                        {
+                            double diff = b.h - hFactTop;
+                            if (diff > 100) diff = 100; if (diff < -100) diff = -100;
+                            shiftTop[i] += diff * 0.75;
+                        }
+                        if (i < braces.Count - 1 && !double.IsNaN(hFactBot))
+                        {
+                            double diff = b.h - hFactBot;
+                            if (diff > 100) diff = 100; if (diff < -100) diff = -100;
+                            shiftBot[i] += diff * 0.75;
+                        }
                     }
                 }
 
                 // --- РЕНДЕР ФАСОНКИ ---
                 CreateRoughGusset(finalPolygon, data);
-                Logger.Write("Успешное применение стратегии.");
+                Logger.Write("Успешное применение стратегии калибровки швов.");
             }
             catch (Exception ex)
             {
@@ -272,9 +342,8 @@ namespace RAM.Plugins.ColumnJointGP1.Services
             }
         }
 
-        private static void CalculateCorner(Point pCenter, Vector v_X, Vector v_Z, BraceWrap brace, string angleStr, double straightLen, double gussetStartX, bool isTop, out Point cornerPt, out Point colPt)
+        private static void CalculateCorner(Point pCenter, Vector v_X, Vector v_Z, BraceWrap brace, string angleStr, double straightLen, double gussetStartX, bool isTop, Point weldPt, out Point cornerPt, out Point colPt)
         {
-            Point weldPt = isTop ? brace.TopWeldPt : brace.BotWeldPt;
             double w_x = new Vector(weldPt.X - pCenter.X, weldPt.Y - pCenter.Y, weldPt.Z - pCenter.Z).Dot(v_X);
             double w_y = new Vector(weldPt.X - pCenter.X, weldPt.Y - pCenter.Y, weldPt.Z - pCenter.Z).Dot(v_Z);
 
@@ -282,7 +351,9 @@ namespace RAM.Plugins.ColumnJointGP1.Services
 
             if (string.IsNullOrWhiteSpace(angleStr))
             {
+                // ОРИГИНАЛЬНАЯ РАБОЧАЯ ЛОГИКА ИЗ БЕКАПА:
                 bool isHorizontalDefault = isTop ? (brace.IsStrut || brace.ZAngle > 1e-4) : (brace.IsStrut || brace.ZAngle < -1e-4);
+
                 if (isHorizontalDefault)
                 {
                     rx = -1; ry = 0;
