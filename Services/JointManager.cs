@@ -17,7 +17,6 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                 ? new string[0]
                 : data.Class_Exclude.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-            // Парсим стыковые классы
             var spliceList = string.IsNullOrWhiteSpace(data.Class_Splice)
                 ? new string[0]
                 : data.Class_Splice.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -26,6 +25,13 @@ namespace RAM.Plugins.ColumnJointGP1.Services
             {
                 if (!(part is Beam beam)) continue;
                 if (excludeList.Contains(beam.Class)) continue;
+
+                // --- НОВЫЙ ФИЛЬТР: ТОЛЬКО УГОЛКИ ---
+                string profName = beam.Profile.ProfileString;
+                if (string.IsNullOrWhiteSpace(profName) || !profName.StartsWith("L", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue; // Игнорируем трубы, швеллеры и прочий мусор
+                }
 
                 double h = 150.0, e1 = 30.0, e2 = 30.0;
 
@@ -52,7 +58,7 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                     e2 = e2,
                     BraceDir = braceDir,
                     ZAngle = braceDir.Dot(v_Z),
-                    IsSplice = spliceList.Contains(beam.Class) // Назначаем флаг
+                    IsSplice = spliceList.Contains(beam.Class)
                 });
             }
 

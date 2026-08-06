@@ -34,7 +34,10 @@ namespace RAM.Plugins.ColumnJointGP1
 		private string _gp_Class = "100";
 		private string _gp_UDA = "";
         private int _gusset_Shape_Mode = 1;
-        private int _two_Brace_Mode = 0;
+        // НОВЫЕ ПРИВАТНЫЕ ПОЛЯ:
+        private string _gusset_Rounding = "";
+        private int _hound_Enabled = 0;
+        private double _hound_Distance = 500.0;
 
         [StructuresDialog("Offset_Web", typeof(TD.Double))] public double Offset_Web { get => _offset_Web; set => Set(ref _offset_Web, value); }
 		[StructuresDialog("Offset_Web_Mode", typeof(TD.Integer))] public int Offset_Web_Mode { get => _offset_Web_Mode; set => Set(ref _offset_Web_Mode, value); }
@@ -84,7 +87,14 @@ namespace RAM.Plugins.ColumnJointGP1
 		[StructuresDialog("GP_Class", typeof(TD.String))] public string GP_Class { get => _gp_Class; set => Set(ref _gp_Class, value); }
 		[StructuresDialog("GP_UDA", typeof(TD.String))] public string GP_UDA { get => _gp_UDA; set => Set(ref _gp_UDA, value); }
         [StructuresDialog("Gusset_Shape_Mode", typeof(TD.Integer))] public int Gusset_Shape_Mode { get => _gusset_Shape_Mode; set => Set(ref _gusset_Shape_Mode, value); }
-        [StructuresDialog("Two_Brace_Mode", typeof(TD.Integer))]
-        public int Two_Brace_Mode { get => _two_Brace_Mode; set => Set(ref _two_Brace_Mode, value); }
+        // НОВЫЕ СВОЙСТВА:
+        [StructuresDialog("Gusset_Rounding", typeof(TD.String))]
+        public string Gusset_Rounding { get => _gusset_Rounding; set => Set(ref _gusset_Rounding, value); }
+
+        [StructuresDialog("Hound_Enabled", typeof(TD.Integer))]
+        public int Hound_Enabled { get => _hound_Enabled; set => Set(ref _hound_Enabled, value); }
+
+        [StructuresDialog("Hound_Distance", typeof(TD.Double))]
+        public double Hound_Distance { get => _hound_Distance; set => Set(ref _hound_Distance, value); }
     }
 }

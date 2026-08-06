@@ -15,7 +15,9 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                 Offset_Brace = data.Offset_Brace,
 
                 Gusset_Shape_Mode = data.Gusset_Shape_Mode,
-                Two_Brace_Mode = data.Two_Brace_Mode,
+                // Маппинг Ищейки
+                HoundEnabled = data.Hound_Enabled,
+                HoundDistance = data.Hound_Distance,
 
                 Angle_Top = data.Angle_Top,
                 Straight_Top = data.Straight_Top,
@@ -40,6 +42,18 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                     UDA = data.GP_UDA
                 }
             };
+
+            // Парсинг округления: если текст пустой или кривой, оставляем null
+            if (double.TryParse(data.Gusset_Rounding, out double roundingVal))
+            {
+                jointData.GussetRounding = roundingVal;
+            }
+            else
+            {
+                jointData.GussetRounding = null;
+            }
+
+            AddBraceSetting(jointData.BraceTypes, data.B1_Class, data.B1_h, data.B1_e1, data.B1_e2);
 
             AddBraceSetting(jointData.BraceTypes, data.B1_Class, data.B1_h, data.B1_e1, data.B1_e2);
             AddBraceSetting(jointData.BraceTypes, data.B2_Class, data.B2_h, data.B2_e1, data.B2_e2);

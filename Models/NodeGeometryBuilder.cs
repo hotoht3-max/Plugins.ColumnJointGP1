@@ -13,7 +13,7 @@ namespace RAM.Plugins.ColumnJointGP1.Services
     {
         public static void BuildNode(Part branch, List<Part> lacings, JointData data)
         {
-            Logger.Write("Вход в геометрическое ядро BuildNode (Исправленный математический солвер)");
+            Logger.Write("Вход в геометрическое ядро BuildNode (Итеративный солвер + Ищейка)");
 
             if (lacings.Count == 0 || !(branch is Beam branchBeam)) return;
 
@@ -157,7 +157,40 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                     return p;
                 };
 
-                // ИСПРАВЛЕННЫЙ GET_H_FACT (С правильной матрицей Крамера)
+                // --- ИЩЕЙКА: СКАНИРОВАНИЕ ФИЗИЧЕСКОГО ТОРЦА КОЛОННЫ ---
+                double zColMin = double.MinValue;
+                double zColMax = double.MaxValue;
+                bool isHoundActive = data.HoundEnabled == 1;
+
+                if (isHoundActive)
+                {
+                    Solid branchSolid = branchBeam.GetSolid();
+                    if (branchSolid != null)
+                    {
+                        double currentMin = double.MaxValue;
+                        double currentMax = double.MinValue;
+                        EdgeEnumerator edgeEnum = branchSolid.GetEdgeEnumerator();
+                        while (edgeEnum.MoveNext())
+                        {
+                            if (edgeEnum.Current is Edge edge)
+                            {
+                                double z1 = GetZ(edge.StartPoint);
+                                double z2 = GetZ(edge.EndPoint);
+                                if (z1 < currentMin) currentMin = z1;
+                                if (z1 > currentMax) currentMax = z1;
+                                if (z2 < currentMin) currentMin = z2;
+                                if (z2 > currentMax) currentMax = z2;
+                            }
+                        }
+                        zColMin = currentMin;
+                        zColMax = currentMax;
+                    }
+                    else
+                    {
+                        isHoundActive = false; // Отключаем, если геометрия недоступна
+                    }
+                }
+
                 Func<Point, Vector, List<Point>, double> GetHFact = (rayOrigin, rayDir, poly) => {
                     double Ox = GetX(rayOrigin), Oz = GetZ(rayOrigin);
                     double Dx = rayDir.Dot(v_X), Dz = rayDir.Dot(v_Z);
@@ -181,11 +214,9 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                         double dX = P1x - Ox;
                         double dZ = P1z - Oz;
 
-                        // ИСПРАВЛЕНИЕ ОШИБКИ ЗНАКОВ:
                         double t = (dZ * Vx - dX * Vz) / det;
                         double s = (dZ * Dx - dX * Dz) / det;
 
-                        // s - положение точки на грани полигона (от 0 до 1). Допускаем микро-погрешность.
                         if (s >= -1e-3 && s <= 1.001)
                         {
                             if (!found || t > maxT)
@@ -203,7 +234,6 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                 double[] shiftTop = new double[braces.Count];
                 double[] shiftBot = new double[braces.Count];
 
-                // Итеративный солвер (10 проходов)
                 for (int iter = 0; iter < 10; iter++)
                 {
                     finalPolygon.Clear();
@@ -224,13 +254,42 @@ namespace RAM.Plugins.ColumnJointGP1.Services
 
                     var topB = braces.First();
                     var botB = braces.Last();
+
                     bool isRectangular = (data.Gusset_Shape_Mode == 0);
+                    if (braces.Any(b => b.IsSplice))
+                    {
+                        isRectangular = false;
+                    }
 
                     if (isRectangular)
                     {
                         double maxZ = braces.Select((b, i) => Math.Max(GetZ(currentTopWeld[i]), GetZ(currentBotWeld[i]))).Max() + data.Straight_Top;
                         double minZ = braces.Select((b, i) => Math.Min(GetZ(currentTopWeld[i]), GetZ(currentBotWeld[i]))).Min() - data.Straight_Bot;
                         double maxX = braces.Select((b, i) => Math.Max(GetX(currentTopWeld[i]), GetX(currentBotWeld[i]))).Max();
+
+                        // Ищейка для прямоугольной формы
+                        if (isHoundActive)
+                        {
+                            if (zColMax > 0 && zColMax <= data.HoundDistance) maxZ = zColMax;
+                            if (zColMin < 0 && Math.Abs(zColMin) <= data.HoundDistance) minZ = zColMin;
+                        }
+
+                        // Округление габаритов
+                        if (iter == 9 && data.GussetRounding.HasValue && data.GussetRounding.Value > 0)
+                        {
+                            double step = data.GussetRounding.Value;
+                            double width = maxX - gussetStartX;
+                            double height = maxZ - minZ;
+
+                            double newWidth = Math.Ceiling(width / step) * step;
+                            double newHeight = Math.Ceiling(height / step) * step;
+
+                            maxX = gussetStartX + newWidth;
+
+                            double deltaZ = newHeight - height;
+                            maxZ += deltaZ / 2.0;
+                            minZ -= deltaZ / 2.0;
+                        }
 
                         finalPolygon.Add(ToGlobal(gussetStartX, maxZ));
                         finalPolygon.Add(ToGlobal(maxX, maxZ));
@@ -240,7 +299,25 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                     else
                     {
                         // --- ВЕРХНИЙ КРАЙ ---
-                        if (topB.IsSplice)
+                        if (isHoundActive && zColMax > 0 && zColMax <= data.HoundDistance)
+                        {
+                            double w_x = GetX(currentTopWeld[0]);
+                            double w_z = GetZ(currentTopWeld[0]);
+                            double dir_x = topB.BraceDir.Dot(v_X);
+                            double dir_z = topB.BraceDir.Dot(v_Z);
+
+                            double cornerX = w_x;
+                            if (dir_z > 1e-4)
+                            {
+                                double t = (zColMax - w_z) / dir_z;
+                                cornerX = w_x + Math.Max(0, t) * dir_x;
+                            }
+                            cornerX = Math.Max(cornerX, gussetStartX);
+
+                            finalPolygon.Add(ToGlobal(gussetStartX, zColMax));
+                            finalPolygon.Add(ToGlobal(cornerX, zColMax));
+                        }
+                        else if (topB.IsSplice)
                         {
                             finalPolygon.Add(ToGlobal(gussetStartX, GetZ(currentTopWeld[0])));
                         }
@@ -251,7 +328,7 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                             if (Math.Abs(data.Straight_Top) > 1e-3) finalPolygon.Add(pCornerTop);
                         }
 
-                        // --- ЦЕНТР: ЕДИНЫЙ АЛГОРИТМ ВЫПУКЛОЙ ОБОЛОЧКИ ДЛЯ ВСЕХ СИТУАЦИЙ ---
+                        // --- ЦЕНТР: Алгоритм Выпуклой Оболочки ---
                         var pts2d = new List<Point>();
                         for (int i = 0; i < braces.Count; i++)
                         {
@@ -278,7 +355,25 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                         finalPolygon.AddRange(hull);
 
                         // --- НИЖНИЙ КРАЙ ---
-                        if (botB.IsSplice)
+                        if (isHoundActive && zColMin < 0 && Math.Abs(zColMin) <= data.HoundDistance)
+                        {
+                            double w_x = GetX(currentBotWeld[braces.Count - 1]);
+                            double w_z = GetZ(currentBotWeld[braces.Count - 1]);
+                            double dir_x = botB.BraceDir.Dot(v_X);
+                            double dir_z = botB.BraceDir.Dot(v_Z);
+
+                            double cornerX = w_x;
+                            if (dir_z < -1e-4)
+                            {
+                                double t = (zColMin - w_z) / dir_z;
+                                cornerX = w_x + Math.Max(0, t) * dir_x;
+                            }
+                            cornerX = Math.Max(cornerX, gussetStartX);
+
+                            finalPolygon.Add(ToGlobal(cornerX, zColMin));
+                            finalPolygon.Add(ToGlobal(gussetStartX, zColMin));
+                        }
+                        else if (botB.IsSplice)
                         {
                             finalPolygon.Add(ToGlobal(gussetStartX, GetZ(currentBotWeld[braces.Count - 1])));
                         }
@@ -290,10 +385,9 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                         }
                     }
 
-                    // Если это последняя итерация - контур готов, выходим
                     if (iter == 9) break;
 
-                    // --- ИЗМЕРЕНИЕ ОТКЛОНЕНИЙ И НАТЯЖКА (ПРЕДОХРАНИТЕЛЬ ОТ ВЗРЫВОВ) ---
+                    // --- ИЗМЕРЕНИЕ ОТКЛОНЕНИЙ И НАТЯЖКА ---
                     for (int i = 0; i < braces.Count; i++)
                     {
                         var b = braces[i];
@@ -316,14 +410,14 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                         double hFactTop = GetHFact(oTopEdge, b.BraceDir, finalPolygon);
                         double hFactBot = GetHFact(oBotEdge, b.BraceDir, finalPolygon);
 
-                        // Натягиваем внутренние точки, жестко ограничив максимальный шаг сдвига
-                        if (i > 0 && !double.IsNaN(hFactTop))
+                        // СНИМАЕМ ОГРАНИЧЕНИЯ: Теперь солвер натягивает ВСЕ точки, включая самые крайние
+                        if (!double.IsNaN(hFactTop))
                         {
                             double diff = b.h - hFactTop;
                             if (diff > 100) diff = 100; if (diff < -100) diff = -100;
                             shiftTop[i] += diff * 0.75;
                         }
-                        if (i < braces.Count - 1 && !double.IsNaN(hFactBot))
+                        if (!double.IsNaN(hFactBot))
                         {
                             double diff = b.h - hFactBot;
                             if (diff > 100) diff = 100; if (diff < -100) diff = -100;
@@ -334,7 +428,7 @@ namespace RAM.Plugins.ColumnJointGP1.Services
 
                 // --- РЕНДЕР ФАСОНКИ ---
                 CreateRoughGusset(finalPolygon, data);
-                Logger.Write("Успешное применение стратегии калибровки швов.");
+                Logger.Write("Успешное применение стратегии калибровки швов и примыкания.");
             }
             catch (Exception ex)
             {

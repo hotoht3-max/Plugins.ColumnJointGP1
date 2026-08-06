@@ -19,7 +19,9 @@ namespace RAM.Plugins.ColumnJointGP1.Models
 
         // НОВЫЕ ПАРАМЕТРЫ ФОРМООБРАЗОВАНИЯ
         public int Gusset_Shape_Mode { get; set; } // 0 - Прямоугольная, 1 - Фигурная
-        public int Two_Brace_Mode { get; set; }
+        public double? GussetRounding { get; set; } // Nullable: если пусто - не округляем
+        public int HoundEnabled { get; set; }
+        public double HoundDistance { get; set; }
         public string Angle_Top { get; set; }
         public double Straight_Top { get; set; }
         public string Angle_Bot { get; set; }
