@@ -15,6 +15,7 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                 Offset_Brace = data.Offset_Brace,
 
                 Gusset_Shape_Mode = data.Gusset_Shape_Mode,
+                GP_PlanPos = data.GP_PlanPos, // НОВЫЙ МАППИНГ
                 // Маппинг Ищейки
                 HoundEnabled = data.Hound_Enabled,
                 HoundDistance = data.Hound_Distance,

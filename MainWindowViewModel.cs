@@ -36,6 +36,7 @@ namespace RAM.Plugins.ColumnJointGP1
         private int _gusset_Shape_Mode = 1;
         // НОВЫЕ ПРИВАТНЫЕ ПОЛЯ:
         private string _gusset_Rounding = "";
+        private int _gp_PlanPos = 0; // НОВОЕ ПРИВАТНОЕ ПОЛЕ
         private int _hound_Enabled = 0;
         private double _hound_Distance = 500.0;
 
@@ -90,6 +91,10 @@ namespace RAM.Plugins.ColumnJointGP1
         // НОВЫЕ СВОЙСТВА:
         [StructuresDialog("Gusset_Rounding", typeof(TD.String))]
         public string Gusset_Rounding { get => _gusset_Rounding; set => Set(ref _gusset_Rounding, value); }
+
+        // НОВОЕ СВОЙСТВО
+        [StructuresDialog("GP_PlanPos", typeof(TD.Integer))]
+        public int GP_PlanPos { get => _gp_PlanPos; set => Set(ref _gp_PlanPos, value); }
 
         [StructuresDialog("Hound_Enabled", typeof(TD.Integer))]
         public int Hound_Enabled { get => _hound_Enabled; set => Set(ref _hound_Enabled, value); }

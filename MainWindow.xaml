@@ -65,6 +65,7 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Позиционирование и зазоры" FontWeight="Bold" Margin="0,5,0,5"/>
@@ -81,15 +82,15 @@
                         <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding Offset_Web}"/>
 
                         <UIControls:WpfFilterCheckBox Grid.Row="3" Grid.Column="0" AttributeName="Offset_Gusset"/>
-                        <Label Grid.Row="3" Grid.Column="1" Content="Смещение фасонки:"/>
+                        <Label Grid.Row="3" Grid.Column="1" Content="Смещение фасонки (по X):"/>
                         <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding Offset_Gusset}"/>
 
                         <UIControls:WpfFilterCheckBox Grid.Row="4" Grid.Column="0" AttributeName="Offset_Brace"/>
                         <Label Grid.Row="4" Grid.Column="1" Content="Зазор до раскосов:"/>
                         <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding Offset_Brace}"/>
 
-                        <!-- БЛОК: Формообразование -->
-                        <TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Text="Формообразование" FontWeight="Bold" Margin="0,15,0,5"/>
+                        <!-- БЛОК: Формообразование и положение -->
+                        <TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Text="Формообразование и положение" FontWeight="Bold" Margin="0,15,0,5"/>
 
                         <UIControls:WpfFilterCheckBox Grid.Row="6" Grid.Column="0" AttributeName="Gusset_Shape_Mode"/>
                         <Label Grid.Row="6" Grid.Column="1" Content="Форма фасонки:"/>
@@ -102,45 +103,52 @@
                         <Label Grid.Row="7" Grid.Column="1" Content="Шаг округления (мм):"/>
                         <TextBox Grid.Row="7" Grid.Column="2" Text="{Binding Gusset_Rounding}" ToolTip="Пусто = Точный дробный габарит"/>
 
-                        <!-- БЛОК: Ищейка -->
-                        <TextBlock Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" Text="Примыкание к торцу (Ищейка)" FontWeight="Bold" Margin="0,15,0,5"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="8" Grid.Column="0" AttributeName="GP_PlanPos"/>
+                        <Label Grid.Row="8" Grid.Column="1" Content="Положение фасонки (в плане):"/>
+                        <ComboBox Grid.Row="8" Grid.Column="2" SelectedIndex="{Binding GP_PlanPos}">
+                            <ComboBoxItem Content="Заподлицо (по уголкам)"/>
+                            <ComboBoxItem Content="Снаружи (по колонне)"/>
+                        </ComboBox>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="9" Grid.Column="0" AttributeName="Hound_Enabled"/>
-                        <Label Grid.Row="9" Grid.Column="1" Content="Искать базу/оголовок:"/>
-                        <ComboBox Grid.Row="9" Grid.Column="2" SelectedIndex="{Binding Hound_Enabled}">
+                        <!-- БЛОК: Ищейка -->
+                        <TextBlock Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2" Text="Примыкание к торцу (Ищейка)" FontWeight="Bold" Margin="0,15,0,5"/>
+
+                        <UIControls:WpfFilterCheckBox Grid.Row="10" Grid.Column="0" AttributeName="Hound_Enabled"/>
+                        <Label Grid.Row="10" Grid.Column="1" Content="Искать базу/оголовок:"/>
+                        <ComboBox Grid.Row="10" Grid.Column="2" SelectedIndex="{Binding Hound_Enabled}">
                             <ComboBoxItem Content="Нет"/>
                             <ComboBoxItem Content="Да"/>
                         </ComboBox>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="10" Grid.Column="0" AttributeName="Hound_Distance"/>
-                        <Label Grid.Row="10" Grid.Column="1" Content="Дистанция поиска (мм):"/>
-                        <TextBox Grid.Row="10" Grid.Column="2" Text="{Binding Hound_Distance}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="11" Grid.Column="0" AttributeName="Hound_Distance"/>
+                        <Label Grid.Row="11" Grid.Column="1" Content="Дистанция поиска (мм):"/>
+                        <TextBox Grid.Row="11" Grid.Column="2" Text="{Binding Hound_Distance}"/>
 
                         <!-- БЛОК: Углы фасонки -->
-                        <TextBlock Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="2" Text="Углы фасонки (Пусто = Авто)" FontWeight="Bold" Margin="0,15,0,5"/>
+                        <TextBlock Grid.Row="12" Grid.Column="1" Grid.ColumnSpan="2" Text="Углы фасонки (Пусто = Авто)" FontWeight="Bold" Margin="0,15,0,5"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="12" Grid.Column="0" AttributeName="Angle_Top"/>
-                        <Label Grid.Row="12" Grid.Column="1" Content="Угол верхнего реза:"/>
-                        <TextBox Grid.Row="12" Grid.Column="2" Text="{Binding Angle_Top}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="13" Grid.Column="0" AttributeName="Angle_Top"/>
+                        <Label Grid.Row="13" Grid.Column="1" Content="Угол верхнего реза:"/>
+                        <TextBox Grid.Row="13" Grid.Column="2" Text="{Binding Angle_Top}"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="13" Grid.Column="0" AttributeName="Straight_Top"/>
-                        <Label Grid.Row="13" Grid.Column="1" Content="Прямой участок (Верх):"/>
-                        <TextBox Grid.Row="13" Grid.Column="2" Text="{Binding Straight_Top}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="14" Grid.Column="0" AttributeName="Straight_Top"/>
+                        <Label Grid.Row="14" Grid.Column="1" Content="Прямой участок (Верх):"/>
+                        <TextBox Grid.Row="14" Grid.Column="2" Text="{Binding Straight_Top}"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="14" Grid.Column="0" AttributeName="Angle_Bot"/>
-                        <Label Grid.Row="14" Grid.Column="1" Content="Угол нижнего реза:"/>
-                        <TextBox Grid.Row="14" Grid.Column="2" Text="{Binding Angle_Bot}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="15" Grid.Column="0" AttributeName="Angle_Bot"/>
+                        <Label Grid.Row="15" Grid.Column="1" Content="Угол нижнего реза:"/>
+                        <TextBox Grid.Row="15" Grid.Column="2" Text="{Binding Angle_Bot}"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="15" Grid.Column="0" AttributeName="Straight_Bot"/>
-                        <Label Grid.Row="15" Grid.Column="1" Content="Прямой участок (Низ):"/>
-                        <TextBox Grid.Row="15" Grid.Column="2" Text="{Binding Straight_Bot}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="16" Grid.Column="0" AttributeName="Straight_Bot"/>
+                        <Label Grid.Row="16" Grid.Column="1" Content="Прямой участок (Низ):"/>
+                        <TextBox Grid.Row="16" Grid.Column="2" Text="{Binding Straight_Bot}"/>
 
                         <!-- БЛОК: Атрибуты -->
-                        <TextBlock Grid.Row="16" Grid.Column="1" Grid.ColumnSpan="2" Text="Атрибуты фасонки" FontWeight="Bold" Margin="0,15,0,5"/>
+                        <TextBlock Grid.Row="17" Grid.Column="1" Grid.ColumnSpan="2" Text="Атрибуты фасонки" FontWeight="Bold" Margin="0,15,0,5"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="17" Grid.Column="0" AttributeName="GP_Thickness"/>
-                        <Label Grid.Row="17" Grid.Column="1" Content="Толщина / Класс:"/>
-                        <StackPanel Grid.Row="17" Grid.Column="2" Orientation="Horizontal">
+                        <UIControls:WpfFilterCheckBox Grid.Row="18" Grid.Column="0" AttributeName="GP_Thickness"/>
+                        <Label Grid.Row="18" Grid.Column="1" Content="Толщина / Класс:"/>
+                        <StackPanel Grid.Row="18" Grid.Column="2" Orientation="Horizontal">
                             <TextBox Width="50" Text="{Binding GP_Thickness}"/>
                             <UIControls:WpfFilterCheckBox AttributeName="GP_Class" Margin="10,0,5,0"/>
                             <TextBox Width="50" Text="{Binding GP_Class}"/>

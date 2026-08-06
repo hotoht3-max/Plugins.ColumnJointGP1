@@ -65,6 +65,8 @@ namespace RAM.Plugins.ColumnJointGP1
         [StructuresField("Gusset_Shape_Mode")] public int Gusset_Shape_Mode = 1;
         [StructuresField("Gusset_Rounding")] public string Gusset_Rounding = "";
 
+        [StructuresField("GP_PlanPos")] public int GP_PlanPos = 0; // НОВОЕ ПОЛЕ
+
         [StructuresField("Hound_Enabled")] public int Hound_Enabled = 0;
         [StructuresField("Hound_Distance")] public double Hound_Distance = 500.0;
     }
