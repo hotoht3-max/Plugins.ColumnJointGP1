@@ -299,33 +299,41 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                     else
                     {
                         // --- ВЕРХНИЙ КРАЙ ---
-                        if (isHoundActive && zColMax > 0 && zColMax <= data.HoundDistance)
+                        bool topIsHound = isHoundActive && zColMax > 0 && zColMax <= data.HoundDistance;
+                        Point pColTop, pCornerTop;
+
+                        if (topIsHound)
                         {
-                            double w_x = GetX(currentTopWeld[0]);
-                            double w_z = GetZ(currentTopWeld[0]);
-                            double dir_x = topB.BraceDir.Dot(v_X);
-                            double dir_z = topB.BraceDir.Dot(v_Z);
-
-                            double cornerX = w_x;
-                            if (dir_z > 1e-4)
-                            {
-                                double t = (zColMax - w_z) / dir_z;
-                                cornerX = w_x + Math.Max(0, t) * dir_x;
-                            }
-                            cornerX = Math.Max(cornerX, gussetStartX);
-
-                            finalPolygon.Add(ToGlobal(gussetStartX, zColMax));
-                            finalPolygon.Add(ToGlobal(cornerX, zColMax));
+                            pColTop = ToGlobal(gussetStartX, zColMax);
+                            pCornerTop = ToGlobal(gussetStartX + data.Straight_Top, zColMax);
                         }
                         else if (topB.IsSplice)
                         {
-                            finalPolygon.Add(ToGlobal(gussetStartX, GetZ(currentTopWeld[0])));
+                            pColTop = ToGlobal(gussetStartX, GetZ(currentTopWeld[0]));
+                            pCornerTop = pColTop;
                         }
                         else
                         {
-                            CalculateCorner(pCenter, v_X, v_Z, topB, data.Angle_Top, data.Straight_Top, gussetStartX, true, currentTopWeld[0], out Point pCornerTop, out Point pColTop);
-                            finalPolygon.Add(pColTop);
-                            if (Math.Abs(data.Straight_Top) > 1e-3) finalPolygon.Add(pCornerTop);
+                            CalculateCorner(pCenter, v_X, v_Z, topB, data.Angle_Top, data.Straight_Top, gussetStartX, true, currentTopWeld[0], out pCornerTop, out pColTop);
+                        }
+
+                        // --- НИЖНИЙ КРАЙ ---
+                        bool botIsHound = isHoundActive && zColMin < 0 && Math.Abs(zColMin) <= data.HoundDistance;
+                        Point pColBot, pCornerBot;
+
+                        if (botIsHound)
+                        {
+                            pColBot = ToGlobal(gussetStartX, zColMin);
+                            pCornerBot = ToGlobal(gussetStartX + data.Straight_Bot, zColMin);
+                        }
+                        else if (botB.IsSplice)
+                        {
+                            pColBot = ToGlobal(gussetStartX, GetZ(currentBotWeld.Last()));
+                            pCornerBot = pColBot;
+                        }
+                        else
+                        {
+                            CalculateCorner(pCenter, v_X, v_Z, botB, data.Angle_Bot, data.Straight_Bot, gussetStartX, false, currentBotWeld.Last(), out pCornerBot, out pColBot);
                         }
 
                         // --- ЦЕНТР: Алгоритм Выпуклой Оболочки ---
@@ -335,6 +343,11 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                             pts2d.Add(currentTopWeld[i]);
                             pts2d.Add(currentBotWeld[i]);
                         }
+
+                        // МАГИЯ "ВИЛКИ": Добавляем точки торцов базы в общий котел выпуклой оболочки.
+                        // Это позволяет алгоритму математически решить, перекрыть распорку или обогнуть её.
+                        if (topIsHound) pts2d.Add(pCornerTop);
+                        if (botIsHound) pts2d.Add(pCornerBot);
 
                         pts2d = pts2d.OrderByDescending(p => GetZ(p)).ThenByDescending(p => GetX(p)).ToList();
 
@@ -352,37 +365,19 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                             }
                             hull.Add(p);
                         }
+
+                        // --- СБОРКА ФИНАЛЬНОГО КОНТУРА ---
+                        finalPolygon.Add(pColTop);
+
+                        // Если это обычный угол реза (не Ищейка), жестко фиксируем его в контуре
+                        if (!topIsHound && Math.Abs(data.Straight_Top) > 1e-3) finalPolygon.Add(pCornerTop);
+
                         finalPolygon.AddRange(hull);
 
-                        // --- НИЖНИЙ КРАЙ ---
-                        if (isHoundActive && zColMin < 0 && Math.Abs(zColMin) <= data.HoundDistance)
-                        {
-                            double w_x = GetX(currentBotWeld[braces.Count - 1]);
-                            double w_z = GetZ(currentBotWeld[braces.Count - 1]);
-                            double dir_x = botB.BraceDir.Dot(v_X);
-                            double dir_z = botB.BraceDir.Dot(v_Z);
+                        // Если это обычный угол реза (не Ищейка), жестко фиксируем его в контуре
+                        if (!botIsHound && Math.Abs(data.Straight_Bot) > 1e-3) finalPolygon.Add(pCornerBot);
 
-                            double cornerX = w_x;
-                            if (dir_z < -1e-4)
-                            {
-                                double t = (zColMin - w_z) / dir_z;
-                                cornerX = w_x + Math.Max(0, t) * dir_x;
-                            }
-                            cornerX = Math.Max(cornerX, gussetStartX);
-
-                            finalPolygon.Add(ToGlobal(cornerX, zColMin));
-                            finalPolygon.Add(ToGlobal(gussetStartX, zColMin));
-                        }
-                        else if (botB.IsSplice)
-                        {
-                            finalPolygon.Add(ToGlobal(gussetStartX, GetZ(currentBotWeld[braces.Count - 1])));
-                        }
-                        else
-                        {
-                            CalculateCorner(pCenter, v_X, v_Z, botB, data.Angle_Bot, data.Straight_Bot, gussetStartX, false, currentBotWeld[braces.Count - 1], out Point pCornerBot, out Point pColBot);
-                            if (Math.Abs(data.Straight_Bot) > 1e-3) finalPolygon.Add(pCornerBot);
-                            finalPolygon.Add(pColBot);
-                        }
+                        finalPolygon.Add(pColBot);
                     }
 
                     if (iter == 9) break;
