@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="RAM.Plugins.ColumnJointGP1.UIControls.GussetShapeControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:UIControls="clr-namespace:Tekla.Structures.Dialog.UIControls;assembly=Tekla.Structures.Dialog">
+
+    <!-- Общий контейнер (центрируем на вкладке) -->
+    <Grid Margin="10" HorizontalAlignment="Center" VerticalAlignment="Top">
+
+        <!-- Холст для жесткого позиционирования элементов поверх картинки -->
+        <Canvas Width="280" Height="420">
+
+            <!-- РАСТРОВАЯ ПОДЛОЖКА -->
+            <!-- Заменили расширение на .png для поддержки прозрачности -->
+            <Image Source="pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/Gusset_Main_View.bmp" 
+                   Width="280" Height="420" Stretch="Uniform"
+                   Canvas.Left="0" Canvas.Top="0"/>
+
+            <!-- ПОЛЯ ВВОДА И ЧЕКБОКСЫ -->
+
+            <!-- 1. Верхний угол (Angle_Top) - Выноска слева сверху -->
+            <UIControls:WpfFilterCheckBox AttributeName="Angle_Top" Canvas.Left="-16" Canvas.Top="62" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <TextBox Text="{Binding Angle_Top}" Canvas.Left="2" Canvas.Top="60" Width="45" Height="22" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+            <!-- 2. Верхний прямой участок (Straight_Top) - Размер сверху -->
+            <UIControls:WpfFilterCheckBox AttributeName="Straight_Top" Canvas.Left="95" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <TextBox Text="{Binding Straight_Top}" Canvas.Left="113" Canvas.Top="-3" Width="45" Height="22" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+            <!-- 3. Режим подрезки (Offset_Web_Mode) - Выпадающий список над зазором -->
+            <ComboBox SelectedIndex="{Binding Offset_Web_Mode}" Canvas.Left="-23" Canvas.Top="180" Width="70" Height="22" FontSize="11" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top">
+                <ComboBoxItem Content="Стенка"/>
+                <ComboBoxItem Content="Габарит"/>
+            </ComboBox>
+
+            <!-- 4. Зазор до колонны (Offset_Web) - Выноска слева по центру -->
+            <UIControls:WpfFilterCheckBox AttributeName="Offset_Web" Canvas.Left="-16" Canvas.Top="152"/>
+            <TextBox Text="{Binding Offset_Web}" Canvas.Left="2" Canvas.Top="149" Width="45" Height="22" HorizontalContentAlignment="Center"/>
+
+            <!-- 5. Зазор между раскосами по вертикали (Offset_Brace) - Размер справа -->
+            <UIControls:WpfFilterCheckBox AttributeName="Offset_Brace" Canvas.Left="213" Canvas.Top="133" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <TextBox Text="{Binding Offset_Brace}" Canvas.Left="231" Canvas.Top="131" Width="44" Height="22" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+            <!-- 6. Нижний угол (Angle_Bot) - Выноска слева снизу -->
+            <UIControls:WpfFilterCheckBox AttributeName="Angle_Bot" Canvas.Left="-16" Canvas.Top="310"/>
+            <TextBox Text="{Binding Angle_Bot}" Canvas.Left="2" Canvas.Top="308" Width="45" Height="22" HorizontalContentAlignment="Center"/>
+
+            <!-- 7. Смещение фасонки (Offset_Gusset) - Размер снизу (от колонны до фасонки) -->
+            <UIControls:WpfFilterCheckBox AttributeName="Offset_Gusset" Canvas.Left="22" Canvas.Top="405"/>
+            <TextBox Text="{Binding Offset_Gusset}" Canvas.Left="40" Canvas.Top="402" Width="46" Height="22" HorizontalContentAlignment="Center"/>
+
+            <!-- 8. Нижний прямой участок (Straight_Bot) - Размер снизу -->
+            <UIControls:WpfFilterCheckBox AttributeName="Straight_Bot" Canvas.Left="95" Canvas.Top="405"/>
+            <TextBox Text="{Binding Straight_Bot}" Canvas.Left="113" Canvas.Top="402" Width="45" Height="22" HorizontalContentAlignment="Center"/>
+
+        </Canvas>
+    </Grid>
+</UserControl>

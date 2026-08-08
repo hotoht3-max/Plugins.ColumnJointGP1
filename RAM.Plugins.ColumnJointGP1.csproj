@@ -105,6 +105,9 @@
     <Compile Include="UIControls\BoltSettingsControl.xaml.cs">
       <DependentUpon>BoltSettingsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UIControls\GussetShapeControl.xaml.cs">
+      <DependentUpon>GussetShapeControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UIControls\HeaderSystemControl.xaml.cs">
       <DependentUpon>HeaderSystemControl.xaml</DependentUpon>
     </Compile>
@@ -161,6 +164,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UIControls\GussetShapeControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UIControls\HeaderSystemControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -168,6 +175,22 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\sl_bolt_structure.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Gusset_Main_View.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Shape_Chamfer.png" />
+    <Resource Include="Resources\Shape_Rect.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Hound_Off.png" />
+    <Resource Include="Resources\Hound_On.png" />
+    <Resource Include="Resources\PlanPos_Inside.png" />
+    <Resource Include="Resources\PlanPos_Outside.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\R_Param.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

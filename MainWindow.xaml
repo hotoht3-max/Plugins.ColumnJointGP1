@@ -5,8 +5,9 @@
         xmlns:UIControls="clr-namespace:Tekla.Structures.Dialog.UIControls;assembly=Tekla.Structures.Dialog"
         xmlns:localUI="clr-namespace:RAM.Plugins.ColumnJointGP1.UIControls"
         xmlns:uicontrols="clr-namespace:RAM.Plugins.ColumnJointGP1.UIControls"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         x:Class="RAM.Plugins.ColumnJointGP1.MainWindow"
-        Title="RAM ColumnJointGP1 (Альфа)" FontSize="14" Height="900" Width="1050">
+        Title="RAM ColumnJointGP1 (Альфа)" FontSize="14" Height="800" Width="800">
     <Grid>
         <Grid.Resources>
             <Style TargetType="TextBox">
@@ -49,123 +50,92 @@
         <localUI:HeaderSystemControl Grid.Row="0" Margin="0,5,0,5"/>
 
         <TabControl Grid.Row="1" Margin="5">
-            <!-- ПЕРВАЯ ВКЛАДКА -->
-            <TabItem Header="Настройки узла">
+            <!-- =============================================================== -->
+            <!-- 1. ГЛАВНАЯ ВКЛАДКА (Бывшая тестовая графическая)                -->
+            <!-- =============================================================== -->
+            <TabItem Header="Форма и зазоры">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <Grid Margin="10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" MinWidth="25"/>
-                            <ColumnDefinition Width="220"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
+                    <StackPanel Margin="20" Orientation="Horizontal" HorizontalAlignment="Center">
 
-                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Позиционирование и зазоры" FontWeight="Bold" Margin="0,5,0,5"/>
+                        <!-- Блок с графическим контролом -->
+                        <uicontrols:GussetShapeControl Margin="0,0,30,0"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="Offset_Web_Mode"/>
-                        <Label Grid.Row="1" Grid.Column="1" Content="Режим подрезки (колонна):"/>
-                        <ComboBox Grid.Row="1" Grid.Column="2" SelectedIndex="{Binding Offset_Web_Mode}">
-                            <ComboBoxItem Content="От плоскости стенки"/>
-                            <ComboBoxItem Content="От внешнего габарита"/>
-                        </ComboBox>
+                        <!-- Блок с дополнительными настройками (справа, Без GroupBox) -->
+                        <Grid VerticalAlignment="Top">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="Offset_Web"/>
-                        <Label Grid.Row="2" Grid.Column="1" Content="Зазор до колонны:"/>
-                        <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding Offset_Web}"/>
+                            <!-- ================= 1. ФОРМА ФАСОНКИ ================= -->
+                            <UIControls:WpfFilterCheckBox AttributeName="Gusset_Shape_Mode" Grid.Row="0" Grid.Column="0" Margin="0,0,5,0"/>
+                            <TextBlock Text="Форма фасонки:" Grid.Row="0" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,0,5"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="3" Grid.Column="0" AttributeName="Offset_Gusset"/>
-                        <Label Grid.Row="3" Grid.Column="1" Content="Смещение фасонки (по X):"/>
-                        <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding Offset_Gusset}"/>
+                            <ComboBox SelectedIndex="{Binding Gusset_Shape_Mode}" Grid.Row="1" Grid.Column="1" Width="90" Height="65" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,10">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding}" Height="45" Width="50" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                                <sys:String>pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/Shape_Rect.png</sys:String>
+                                <sys:String>pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/Shape_Chamfer.png</sys:String>
+                            </ComboBox>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="4" Grid.Column="0" AttributeName="Offset_Brace"/>
-                        <Label Grid.Row="4" Grid.Column="1" Content="Зазор до раскосов:"/>
-                        <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding Offset_Brace}"/>
+                            <!-- ================= 1.1 ОКРУГЛЕНИЕ ================= -->
+                            <!-- ИСПРАВЛЕНО: Gusset_Rounding -->
+                            <UIControls:WpfFilterCheckBox AttributeName="Gusset_Rounding" Grid.Row="2" Grid.Column="0" Margin="0,0,5,0"/>
+                            <TextBlock Text="Округление:" Grid.Row="2" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,0,5"/>
+                            <TextBox Text="{Binding Gusset_Rounding}" Grid.Row="3" Grid.Column="1" Width="90" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="0,0,0,15"/>
 
-                        <!-- БЛОК: Формообразование и положение -->
-                        <TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Text="Формообразование и положение" FontWeight="Bold" Margin="0,15,0,5"/>
+                            <!-- ================= 2. ПОЛОЖЕНИЕ В ПЛАНЕ ================= -->
+                            <UIControls:WpfFilterCheckBox AttributeName="GP_PlanPos" Grid.Row="4" Grid.Column="0" Margin="0,0,5,0"/>
+                            <TextBlock Text="Положение в плане:" Grid.Row="4" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,0,5"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="6" Grid.Column="0" AttributeName="Gusset_Shape_Mode"/>
-                        <Label Grid.Row="6" Grid.Column="1" Content="Форма фасонки:"/>
-                        <ComboBox Grid.Row="6" Grid.Column="2" SelectedIndex="{Binding Gusset_Shape_Mode}">
-                            <ComboBoxItem Content="Прямоугольная (Габарит)"/>
-                            <ComboBoxItem Content="Фигурная (Авто-скос)"/>
-                        </ComboBox>
+                            <ComboBox SelectedIndex="{Binding GP_PlanPos}" Grid.Row="5" Grid.Column="1" Width="90" Height="65" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,15">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding}" Height="45" Width="50" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                                <sys:String>pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/PlanPos_Inside.png</sys:String>
+                                <sys:String>pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/PlanPos_Outside.png</sys:String>
+                            </ComboBox>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="7" Grid.Column="0" AttributeName="Gusset_Rounding"/>
-                        <Label Grid.Row="7" Grid.Column="1" Content="Шаг округления (мм):"/>
-                        <TextBox Grid.Row="7" Grid.Column="2" Text="{Binding Gusset_Rounding}" ToolTip="Пусто = Точный дробный габарит"/>
+                            <!-- ================= 3. ПРИМЫКАНИЕ К ТОРЦУ ================= -->
+                            <!-- ИСПРАВЛЕНО: Hound_Enabled -->
+                            <UIControls:WpfFilterCheckBox AttributeName="Hound_Enabled" Grid.Row="6" Grid.Column="0" Margin="0,0,5,0"/>
+                            <TextBlock Text="Примыкание к торцу:" Grid.Row="6" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,0,5"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="8" Grid.Column="0" AttributeName="GP_PlanPos"/>
-                        <Label Grid.Row="8" Grid.Column="1" Content="Положение фасонки (в плане):"/>
-                        <ComboBox Grid.Row="8" Grid.Column="2" SelectedIndex="{Binding GP_PlanPos}">
-                            <ComboBoxItem Content="Заподлицо (по уголкам)"/>
-                            <ComboBoxItem Content="Снаружи (по колонне)"/>
-                        </ComboBox>
+                            <ComboBox SelectedIndex="{Binding Hound_Enabled}" Grid.Row="7" Grid.Column="1" Width="90" Height="65" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,10">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding}" Height="45" Width="50" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                                <sys:String>pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/Hound_Off.png</sys:String>
+                                <sys:String>pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/Hound_On.png</sys:String>
+                            </ComboBox>
 
-                        <!-- БЛОК: Ищейка -->
-                        <TextBlock Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2" Text="Примыкание к торцу (Ищейка)" FontWeight="Bold" Margin="0,15,0,5"/>
+                            <!-- ================= 3.1 ПОЛЕ ПОИСКА ================= -->
+                            <!-- ИСПРАВЛЕНО: Hound_Distance -->
+                            <UIControls:WpfFilterCheckBox AttributeName="Hound_Distance" Grid.Row="8" Grid.Column="0" Margin="0,0,5,0"/>
+                            <TextBlock Text="Поле поиска:" Grid.Row="8" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,0,5"/>
+                            <TextBox Text="{Binding Hound_Distance}" Grid.Row="9" Grid.Column="1" Width="90" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="0,0,0,15"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="10" Grid.Column="0" AttributeName="Hound_Enabled"/>
-                        <Label Grid.Row="10" Grid.Column="1" Content="Искать базу/оголовок:"/>
-                        <ComboBox Grid.Row="10" Grid.Column="2" SelectedIndex="{Binding Hound_Enabled}">
-                            <ComboBoxItem Content="Нет"/>
-                            <ComboBoxItem Content="Да"/>
-                        </ComboBox>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="11" Grid.Column="0" AttributeName="Hound_Distance"/>
-                        <Label Grid.Row="11" Grid.Column="1" Content="Дистанция поиска (мм):"/>
-                        <TextBox Grid.Row="11" Grid.Column="2" Text="{Binding Hound_Distance}"/>
-
-                        <!-- БЛОК: Углы фасонки -->
-                        <TextBlock Grid.Row="12" Grid.Column="1" Grid.ColumnSpan="2" Text="Углы фасонки (Пусто = Авто)" FontWeight="Bold" Margin="0,15,0,5"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="13" Grid.Column="0" AttributeName="Angle_Top"/>
-                        <Label Grid.Row="13" Grid.Column="1" Content="Угол верхнего реза:"/>
-                        <TextBox Grid.Row="13" Grid.Column="2" Text="{Binding Angle_Top}"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="14" Grid.Column="0" AttributeName="Straight_Top"/>
-                        <Label Grid.Row="14" Grid.Column="1" Content="Прямой участок (Верх):"/>
-                        <TextBox Grid.Row="14" Grid.Column="2" Text="{Binding Straight_Top}"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="15" Grid.Column="0" AttributeName="Angle_Bot"/>
-                        <Label Grid.Row="15" Grid.Column="1" Content="Угол нижнего реза:"/>
-                        <TextBox Grid.Row="15" Grid.Column="2" Text="{Binding Angle_Bot}"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="16" Grid.Column="0" AttributeName="Straight_Bot"/>
-                        <Label Grid.Row="16" Grid.Column="1" Content="Прямой участок (Низ):"/>
-                        <TextBox Grid.Row="16" Grid.Column="2" Text="{Binding Straight_Bot}"/>
-
-                        <!-- БЛОК: Атрибуты -->
-                        <TextBlock Grid.Row="17" Grid.Column="1" Grid.ColumnSpan="2" Text="Атрибуты фасонки" FontWeight="Bold" Margin="0,15,0,5"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="18" Grid.Column="0" AttributeName="GP_Thickness"/>
-                        <Label Grid.Row="18" Grid.Column="1" Content="Толщина / Класс:"/>
-                        <StackPanel Grid.Row="18" Grid.Column="2" Orientation="Horizontal">
-                            <TextBox Width="50" Text="{Binding GP_Thickness}"/>
-                            <UIControls:WpfFilterCheckBox AttributeName="GP_Class" Margin="10,0,5,0"/>
-                            <TextBox Width="50" Text="{Binding GP_Class}"/>
-                        </StackPanel>
-                    </Grid>
+                        </Grid>
+                    </StackPanel>
                 </ScrollViewer>
             </TabItem>
 
@@ -174,17 +144,19 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <Grid Margin="10">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="120"/>
+                            <RowDefinition Height="200"/>
                             <!-- Под эскиз -->
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <!-- Плейсхолдер для эскиза -->
-                        <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="1" Background="#F0F0F0" Margin="0,0,0,15">
-                            <TextBlock Text="[ МЕСТО ДЛЯ ЭСКИЗА ПАРАМЕТРОВ РАСКОСА ]" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Gray"/>
-                        </Border>
+                        <!-- Эскиз параметров раскоса -->
+                        <Image Grid.Row="0" 
+                   Source="pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/R_Param.png" 
+                   Stretch="Uniform" 
+                   HorizontalAlignment="Center" 
+                   Margin="0,0,0,37" Width="330"/>
 
                         <!-- Таблица -->
                         <Grid Grid.Row="1">
@@ -200,14 +172,14 @@
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="32"/>
+                                <RowDefinition Height="32"/>
+                                <RowDefinition Height="32"/>
+                                <RowDefinition Height="32"/>
+                                <RowDefinition Height="32"/>
+                                <RowDefinition Height="32"/>
                                 <!-- Строка для Фасонки -->
-                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="32"/>
                             </Grid.RowDefinitions>
 
                             <!-- Заголовки -->
@@ -363,6 +335,39 @@
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
+            <!-- =============================================================== -->
+            <!-- 4. ВКЛАДКА ТЕСТ (Бывшая первая)                                 -->
+            <!-- =============================================================== -->
+            <TabItem Header="Тест">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="20" HorizontalAlignment="Left">
+                        <GroupBox Header="Свойства фасонки" Padding="15">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="200"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Профиль (Толщина) -->
+                                <UIControls:WpfFilterCheckBox AttributeName="GP_Thickness" Grid.Row="0" Grid.Column="0" Margin="0,0,10,0"/>
+                                <TextBlock Text="Профиль (Толщина):" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,5"/>
+                                <TextBox Text="{Binding GP_Thickness}" Grid.Row="0" Grid.Column="2" Margin="0,0,0,5"/>
+
+                                <!-- Класс -->
+                                <UIControls:WpfFilterCheckBox AttributeName="GP_Class" Grid.Row="1" Grid.Column="0" Margin="0,0,10,0"/>
+                                <TextBlock Text="Класс детали:" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"/>
+                                <TextBox Text="{Binding GP_Class}" Grid.Row="1" Grid.Column="2"/>
+                            </Grid>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
         </TabControl>
 
         <UIControls:WpfOkApplyModifyGetOnOffCancel Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,5,0,5"
