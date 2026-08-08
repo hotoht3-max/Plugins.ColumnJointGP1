@@ -1,0 +1,124 @@
+﻿<Window x:Class="RAM.Plugins.ColumnJointGP1.UIControls.BeamPropertyWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Свойства детали" Width="400" SizeToContent="Height"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        Background="#F5F5F5" FontSize="12">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Серия нумерации -->
+        <GroupBox Header="Серия нумерации" Grid.Row="0" Padding="10" Margin="0,0,0,10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="30"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Префикс" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                <TextBlock Text="Начальный номер" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+
+                <!-- Деталь -->
+                <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">
+                    <CheckBox IsChecked="{Binding IsPartPrefChecked}" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="Деталь" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBox Text="{Binding PartPrefix}" Grid.Row="1" Grid.Column="1" Margin="0,0,5,5"/>
+                <CheckBox IsChecked="{Binding IsPartNoChecked}" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,5"/>
+                <TextBox Text="{Binding PartStartNo}" Grid.Row="1" Grid.Column="3" Margin="0,0,0,5"/>
+
+                <!-- Сборка -->
+                <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">
+                    <CheckBox IsChecked="{Binding IsAssyPrefChecked}" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="Сборка" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBox Text="{Binding AssyPrefix}" Grid.Row="2" Grid.Column="1" Margin="0,0,5,0"/>
+                <CheckBox IsChecked="{Binding IsAssyNoChecked}" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBox Text="{Binding AssyStartNo}" Grid.Row="2" Grid.Column="3"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Атрибуты -->
+        <GroupBox Header="Атрибуты" Grid.Row="1" Padding="10" Margin="0,0,0,10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="80"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Имя -->
+                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,0,5">
+                    <CheckBox IsChecked="{Binding IsNameChecked}" Margin="0,0,5,0"/>
+                    <TextBlock Text="Имя"/>
+                </StackPanel>
+                <TextBox Text="{Binding Name}" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,5"/>
+
+                <!-- Профиль -->
+                <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,0,5">
+                    <CheckBox IsChecked="{Binding IsProfileChecked}" Margin="0,0,5,0"/>
+                    <TextBlock Text="Профиль"/>
+                </StackPanel>
+                <TextBox Text="{Binding Profile}" Grid.Row="1" Grid.Column="1" Margin="0,0,5,5"/>
+                <Button Content="Выбрать..." Grid.Row="1" Grid.Column="2" Margin="0,0,0,5" IsEnabled="False" ToolTip="Каталог в разработке"/>
+
+                <!-- Материал -->
+                <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,0,5">
+                    <CheckBox IsChecked="{Binding IsMaterialChecked}" Margin="0,0,5,0"/>
+                    <TextBlock Text="Материал"/>
+                </StackPanel>
+                <TextBox Text="{Binding Material}" Grid.Row="2" Grid.Column="1" Margin="0,0,5,5"/>
+                <Button Content="Выбрать..." Grid.Row="2" Grid.Column="2" Margin="0,0,0,5" IsEnabled="False" ToolTip="Каталог в разработке"/>
+
+                <!-- Класс -->
+                <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center">
+                    <CheckBox IsChecked="{Binding IsClassChecked}" Margin="0,0,5,0"/>
+                    <TextBlock Text="Класс"/>
+                </StackPanel>
+                <TextBox Text="{Binding ClassStr}" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Пользовательские атрибуты (UDA) -->
+        <GroupBox Header="Пользовательские атрибуты" Grid.Row="2" Padding="10" Margin="0,0,0,15">
+            <ItemsControl ItemsSource="{Binding UdaRows}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="0,2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="30"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            <TextBox Text="{Binding Name, Mode=TwoWay}" Grid.Column="1" Margin="0,0,5,0" />
+                            <TextBox Text="{Binding Value, Mode=TwoWay}" Grid.Column="2"/>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </GroupBox>
+
+        <!-- Кнопка OK -->
+        <Button x:Name="BtnOk" Content="OK" Grid.Row="3" Width="80" Height="25" HorizontalAlignment="Left" Click="BtnOk_Click"/>
+    </Grid>
+</Window>

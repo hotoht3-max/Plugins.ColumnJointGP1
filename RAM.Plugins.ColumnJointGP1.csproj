@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseViewModel.cs" />
+    <Compile Include="Converters\ClassToColorConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -78,7 +79,9 @@
     <Compile Include="Models\BraceWrap.cs" />
     <Compile Include="Models\JointData.cs" />
     <Compile Include="Models\NodeGeometryBuilder.cs" />
+    <Compile Include="Models\PartPropertiesContext.cs" />
     <Compile Include="Models\PartSettings.cs" />
+    <Compile Include="Models\UdaRow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -98,12 +101,22 @@
     <Compile Include="Services\Logger.cs" />
     <Compile Include="Services\PluginDataMapper.cs" />
     <Compile Include="Services\TeklaProfileHelper.cs" />
+    <Compile Include="Services\UdaParser.cs" />
     <Compile Include="Services\WeldBuilderService.cs" />
+    <Compile Include="UIControls\BeamPropertyWindow.xaml.cs">
+      <DependentUpon>BeamPropertyWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UIControls\BoltLayoutControl.xaml.cs">
       <DependentUpon>BoltLayoutControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UIControls\BoltSettingsControl.xaml.cs">
       <DependentUpon>BoltSettingsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UIControls\GussetOverlayControl.xaml.cs">
+      <DependentUpon>GussetOverlayControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UIControls\GussetPlateControl.xaml.cs">
+      <DependentUpon>GussetPlateControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UIControls\GussetShapeControl.xaml.cs">
       <DependentUpon>GussetShapeControl.xaml</DependentUpon>
@@ -156,11 +169,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UIControls\BeamPropertyWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UIControls\BoltLayoutControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UIControls\BoltSettingsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UIControls\GussetOverlayControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UIControls\GussetPlateControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

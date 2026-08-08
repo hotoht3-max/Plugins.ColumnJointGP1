@@ -2,6 +2,7 @@
 using TD = Tekla.Structures.Datatype;
 using System.Collections.ObjectModel;
 using RAM.Plugins.ColumnJointGP1.Services;
+using RAM.Plugins.ColumnJointGP1.Models;
 
 namespace RAM.Plugins.ColumnJointGP1
 {
@@ -45,8 +46,8 @@ namespace RAM.Plugins.ColumnJointGP1
         private string _gp_Name = "ФАСОНКА";
         private string _gp_Class = "100";
         private string _gp_UDA = "";
-        private int _gusset_Shape_Mode = 1;
 
+        private int _gusset_Shape_Mode = 1;
         private string _gusset_Rounding = "";
         private int _gp_PlanPos = 0;
         private int _hound_Enabled = 0;
@@ -71,9 +72,18 @@ namespace RAM.Plugins.ColumnJointGP1
         public ObservableCollection<string> AvailableStandards { get; } = new ObservableCollection<string>();
         public ObservableCollection<double> AvailableSizes { get; } = new ObservableCollection<double>();
 
+        // Список стандартных классов для выпадающего меню (0 - 14)
+        public ObservableCollection<string> StandardClasses { get; } = new ObservableCollection<string>
+        { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14" };
+
+        // Коллекция для привязки 4-х строк UDA в нашем Overlay-окне
+        public ObservableCollection<UdaRow> UdaRows { get; } = new ObservableCollection<UdaRow>();
+
         public MainWindowViewModel()
         {
             RefreshStandards();
+            // Инициализируем 4 пустые строки для формы UDA
+            for (int i = 0; i < 4; i++) UdaRows.Add(new UdaRow());
         }
 
         [StructuresDialog("Offset_Web", typeof(TD.Double))] public double Offset_Web { get => _offset_Web; set => Set(ref _offset_Web, value); }
@@ -134,6 +144,7 @@ namespace RAM.Plugins.ColumnJointGP1
         [StructuresDialog("Class_Exclude", typeof(TD.String))] public string Class_Exclude { get => _class_Exclude; set => Set(ref _class_Exclude, value); }
         [StructuresDialog("Class_Splice", typeof(TD.String))] public string Class_Splice { get => _class_Splice; set => Set(ref _class_Splice, value); }
 
+        // --- ОСНОВНЫЕ ПАРАМЕТРЫ ФАСОНКИ ---
         [StructuresDialog("GP_Thickness", typeof(TD.String))] public string GP_Thickness { get => _gp_Thickness; set => Set(ref _gp_Thickness, value); }
         [StructuresDialog("GP_Material", typeof(TD.String))] public string GP_Material { get => _gp_Material; set => Set(ref _gp_Material, value); }
         [StructuresDialog("GP_PartPref", typeof(TD.String))] public string GP_PartPref { get => _gp_PartPref; set => Set(ref _gp_PartPref, value); }
@@ -143,8 +154,8 @@ namespace RAM.Plugins.ColumnJointGP1
         [StructuresDialog("GP_Name", typeof(TD.String))] public string GP_Name { get => _gp_Name; set => Set(ref _gp_Name, value); }
         [StructuresDialog("GP_Class", typeof(TD.String))] public string GP_Class { get => _gp_Class; set => Set(ref _gp_Class, value); }
         [StructuresDialog("GP_UDA", typeof(TD.String))] public string GP_UDA { get => _gp_UDA; set => Set(ref _gp_UDA, value); }
-        [StructuresDialog("Gusset_Shape_Mode", typeof(TD.Integer))] public int Gusset_Shape_Mode { get => _gusset_Shape_Mode; set => Set(ref _gusset_Shape_Mode, value); }
 
+        [StructuresDialog("Gusset_Shape_Mode", typeof(TD.Integer))] public int Gusset_Shape_Mode { get => _gusset_Shape_Mode; set => Set(ref _gusset_Shape_Mode, value); }
         [StructuresDialog("Gusset_Rounding", typeof(TD.String))] public string Gusset_Rounding { get => _gusset_Rounding; set => Set(ref _gusset_Rounding, value); }
         [StructuresDialog("GP_PlanPos", typeof(TD.Integer))] public int GP_PlanPos { get => _gp_PlanPos; set => Set(ref _gp_PlanPos, value); }
         [StructuresDialog("Hound_Enabled", typeof(TD.Integer))] public int Hound_Enabled { get => _hound_Enabled; set => Set(ref _hound_Enabled, value); }

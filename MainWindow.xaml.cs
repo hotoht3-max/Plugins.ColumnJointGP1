@@ -1,5 +1,8 @@
 ﻿using System;
 using Tekla.Structures.Dialog;
+using RAM.Plugins.ColumnJointGP1.Models;
+using RAM.Plugins.ColumnJointGP1.Services;
+using RAM.Plugins.ColumnJointGP1.UIControls;
 
 namespace RAM.Plugins.ColumnJointGP1
 {
@@ -29,5 +32,26 @@ namespace RAM.Plugins.ColumnJointGP1
         }
 
         private void WpfOkApplyModifyGetOnOffCancel_OnOffClicked(object sender, EventArgs e) => this.ToggleSelection();
+
+        // 1. Плашка просит открыть Оверлей
+        private void GussetPlate_OpenOverlayRequested(object sender, EventArgs e)
+        {
+            GussetOverlay.Open(DataViewModel);
+        }
+
+        // 2. Инженер переключил галочку на плашке -> передаем статус Оверлею
+        private void GussetPlate_MasterCheckToggled(object sender, bool isChecked)
+        {
+            GussetOverlay.ApplyMasterState(isChecked);
+        }
+
+        // 3. Оверлей закрылся и говорит, что внутри есть настройки -> включаем галочку на плашке
+        private void GussetOverlay_OverlayClosed(object sender, bool shouldMasterBeChecked)
+        {
+            if (!GussetPlate.IsMasterChecked && shouldMasterBeChecked)
+            {
+                GussetPlate.SetMasterState(true);
+            }
+        }
     }
 }

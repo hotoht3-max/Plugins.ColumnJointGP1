@@ -5,11 +5,18 @@
         xmlns:UIControls="clr-namespace:Tekla.Structures.Dialog.UIControls;assembly=Tekla.Structures.Dialog"
         xmlns:localUI="clr-namespace:RAM.Plugins.ColumnJointGP1.UIControls"
         xmlns:uicontrols="clr-namespace:RAM.Plugins.ColumnJointGP1.UIControls"
+        xmlns:localConv="clr-namespace:RAM.Plugins.ColumnJointGP1.Converters" 
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
         x:Class="RAM.Plugins.ColumnJointGP1.MainWindow"
         Title="RAM ColumnJointGP1 (Альфа)" FontSize="14" Height="800" Width="800">
-    <Grid>
+
+    <!-- КОРНЕВОЙ СЛОЙ (RootLayout) ДЛЯ ПОДДЕРЖКИ ПСЕВДО-ОКНА (OVERLAY) -->
+    <Grid x:Name="RootLayout">
         <Grid.Resources>
+            
             <Style TargetType="TextBox">
                 <Setter Property="Height" Value="24"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -29,7 +36,6 @@
                 <Setter Property="HorizontalAlignment" Value="Center"/>
                 <Setter Property="Margin" Value="5,0"/>
             </Style>
-            <!-- СТИЛЬ ДЛЯ БЛОКИРОВКИ h ПРИ ВЫБОРЕ БОЛТОВ -->
             <Style x:Key="SpliceHStyle" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding SpliceConnType}" Value="1">
@@ -41,341 +47,302 @@
             </Style>
         </Grid.Resources>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        <!-- =============================================================== -->
+        <!-- СЛОЙ 1: ОСНОВНОЙ ИНТЕРФЕЙС ПЛАГИНА                              -->
+        <!-- =============================================================== -->
+        <Grid x:Name="MainContentGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <localUI:HeaderSystemControl Grid.Row="0" Margin="0,5,0,5"/>
+            <localUI:HeaderSystemControl Grid.Row="0" Margin="0,5,0,5"/>
 
-        <TabControl Grid.Row="1" Margin="5">
-            <!-- =============================================================== -->
-            <!-- 1. ГЛАВНАЯ ВКЛАДКА (Бывшая тестовая графическая)                -->
-            <!-- =============================================================== -->
-            <TabItem Header="Форма и зазоры">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel Margin="20" Orientation="Horizontal" HorizontalAlignment="Center">
-
-                        <!-- Блок с графическим контролом -->
-                        <uicontrols:GussetShapeControl Margin="0,0,30,0"/>
-
-                        <!-- Блок с дополнительными настройками (справа, Без GroupBox) -->
-                        <Grid VerticalAlignment="Top">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <!-- ================= 1. ФОРМА ФАСОНКИ ================= -->
-                            <UIControls:WpfFilterCheckBox AttributeName="Gusset_Shape_Mode" Grid.Row="0" Grid.Column="0" Margin="0,0,5,0"/>
-                            <TextBlock Text="Форма фасонки:" Grid.Row="0" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,0,5"/>
-
-                            <ComboBox SelectedIndex="{Binding Gusset_Shape_Mode}" Grid.Row="1" Grid.Column="1" Width="90" Height="65" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,10">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <Image Source="{Binding}" Height="45" Width="50" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                                <sys:String>pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/Shape_Rect.png</sys:String>
-                                <sys:String>pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/Shape_Chamfer.png</sys:String>
-                            </ComboBox>
-
-                            <!-- ================= 1.1 ОКРУГЛЕНИЕ ================= -->
-                            <!-- ИСПРАВЛЕНО: Gusset_Rounding -->
-                            <UIControls:WpfFilterCheckBox AttributeName="Gusset_Rounding" Grid.Row="2" Grid.Column="0" Margin="0,0,5,0"/>
-                            <TextBlock Text="Округление:" Grid.Row="2" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,0,5"/>
-                            <TextBox Text="{Binding Gusset_Rounding}" Grid.Row="3" Grid.Column="1" Width="90" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="0,0,0,15"/>
-
-                            <!-- ================= 2. ПОЛОЖЕНИЕ В ПЛАНЕ ================= -->
-                            <UIControls:WpfFilterCheckBox AttributeName="GP_PlanPos" Grid.Row="4" Grid.Column="0" Margin="0,0,5,0"/>
-                            <TextBlock Text="Положение в плане:" Grid.Row="4" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,0,5"/>
-
-                            <ComboBox SelectedIndex="{Binding GP_PlanPos}" Grid.Row="5" Grid.Column="1" Width="90" Height="65" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,15">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <Image Source="{Binding}" Height="45" Width="50" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                                <sys:String>pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/PlanPos_Inside.png</sys:String>
-                                <sys:String>pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/PlanPos_Outside.png</sys:String>
-                            </ComboBox>
-
-                            <!-- ================= 3. ПРИМЫКАНИЕ К ТОРЦУ ================= -->
-                            <!-- ИСПРАВЛЕНО: Hound_Enabled -->
-                            <UIControls:WpfFilterCheckBox AttributeName="Hound_Enabled" Grid.Row="6" Grid.Column="0" Margin="0,0,5,0"/>
-                            <TextBlock Text="Примыкание к торцу:" Grid.Row="6" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,0,5"/>
-
-                            <ComboBox SelectedIndex="{Binding Hound_Enabled}" Grid.Row="7" Grid.Column="1" Width="90" Height="65" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,10">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <Image Source="{Binding}" Height="45" Width="50" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                                <sys:String>pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/Hound_Off.png</sys:String>
-                                <sys:String>pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/Hound_On.png</sys:String>
-                            </ComboBox>
-
-                            <!-- ================= 3.1 ПОЛЕ ПОИСКА ================= -->
-                            <!-- ИСПРАВЛЕНО: Hound_Distance -->
-                            <UIControls:WpfFilterCheckBox AttributeName="Hound_Distance" Grid.Row="8" Grid.Column="0" Margin="0,0,5,0"/>
-                            <TextBlock Text="Поле поиска:" Grid.Row="8" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,0,5"/>
-                            <TextBox Text="{Binding Hound_Distance}" Grid.Row="9" Grid.Column="1" Width="90" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="0,0,0,15"/>
-
-                        </Grid>
-                    </StackPanel>
-                </ScrollViewer>
-            </TabItem>
-
-            <!-- ВТОРАЯ ВКЛАДКА -->
-            <TabItem Header="Типы раскосов">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <Grid Margin="10">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="200"/>
-                            <!-- Под эскиз -->
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-
-                        <!-- Эскиз параметров раскоса -->
-                        <Image Grid.Row="0" 
-                   Source="pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/R_Param.png" 
-                   Stretch="Uniform" 
-                   HorizontalAlignment="Center" 
-                   Margin="0,0,0,37" Width="330"/>
-
-                        <!-- Таблица -->
-                        <Grid Grid.Row="1">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="30"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <!-- Новые пропорциональные колонки для швов -->
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="32"/>
-                                <RowDefinition Height="32"/>
-                                <RowDefinition Height="32"/>
-                                <RowDefinition Height="32"/>
-                                <RowDefinition Height="32"/>
-                                <RowDefinition Height="32"/>
-                                <!-- Строка для Фасонки -->
-                                <RowDefinition Height="32"/>
-                            </Grid.RowDefinitions>
-
-                            <!-- Заголовки -->
-                            <TextBlock Grid.Row="0" Grid.Column="1" Text="Класс" FontWeight="Bold" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Row="0" Grid.Column="2" Text="Шов (h)" FontWeight="Bold" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Row="0" Grid.Column="3" Text="Отступ (e1)" FontWeight="Bold" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Row="0" Grid.Column="4" Text="Отступ (e2)" FontWeight="Bold" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Row="0" Grid.Column="5" Text="Тип шва" FontWeight="Bold" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Row="0" Grid.Column="6" Text="Катет" FontWeight="Bold" HorizontalAlignment="Center"/>
-
-                            <!-- Строка 1 -->
-                            <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="B1_Class"/>
-                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding B1_Class}"/>
-                            <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding B1_h}"/>
-                            <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding B1_e1}"/>
-                            <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding B1_e2}"/>
-                            <ComboBox Grid.Row="1" Grid.Column="5" SelectedIndex="{Binding B1_WType}">
-                                <ComboBoxItem Content="Нет"/>
-                                <ComboBoxItem Content="Заводской"/>
-                                <ComboBoxItem Content="Монтажный"/>
-                            </ComboBox>
-                            <TextBox Grid.Row="1" Grid.Column="6" Text="{Binding B1_WSize}"/>
-
-                            <!-- Строка 2 -->
-                            <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="B2_Class"/>
-                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding B2_Class}"/>
-                            <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding B2_h}"/>
-                            <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding B2_e1}"/>
-                            <TextBox Grid.Row="2" Grid.Column="4" Text="{Binding B2_e2}"/>
-                            <ComboBox Grid.Row="2" Grid.Column="5" SelectedIndex="{Binding B2_WType}">
-                                <ComboBoxItem Content="Нет"/>
-                                <ComboBoxItem Content="Заводской"/>
-                                <ComboBoxItem Content="Монтажный"/>
-                            </ComboBox>
-                            <TextBox Grid.Row="2" Grid.Column="6" Text="{Binding B2_WSize}"/>
-
-                            <!-- Строка 3 -->
-                            <UIControls:WpfFilterCheckBox Grid.Row="3" Grid.Column="0" AttributeName="B3_Class"/>
-                            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding B3_Class}"/>
-                            <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding B3_h}"/>
-                            <TextBox Grid.Row="3" Grid.Column="3" Text="{Binding B3_e1}"/>
-                            <TextBox Grid.Row="3" Grid.Column="4" Text="{Binding B3_e2}"/>
-                            <ComboBox Grid.Row="3" Grid.Column="5" SelectedIndex="{Binding B3_WType}">
-                                <ComboBoxItem Content="Нет"/>
-                                <ComboBoxItem Content="Заводской"/>
-                                <ComboBoxItem Content="Монтажный"/>
-                            </ComboBox>
-                            <TextBox Grid.Row="3" Grid.Column="6" Text="{Binding B3_WSize}"/>
-
-                            <!-- Строка 4 -->
-                            <UIControls:WpfFilterCheckBox Grid.Row="4" Grid.Column="0" AttributeName="B4_Class"/>
-                            <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding B4_Class}"/>
-                            <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding B4_h}"/>
-                            <TextBox Grid.Row="4" Grid.Column="3" Text="{Binding B4_e1}"/>
-                            <TextBox Grid.Row="4" Grid.Column="4" Text="{Binding B4_e2}"/>
-                            <ComboBox Grid.Row="4" Grid.Column="5" SelectedIndex="{Binding B4_WType}">
-                                <ComboBoxItem Content="Нет"/>
-                                <ComboBoxItem Content="Заводской"/>
-                                <ComboBoxItem Content="Монтажный"/>
-                            </ComboBox>
-                            <TextBox Grid.Row="4" Grid.Column="6" Text="{Binding B4_WSize}"/>
-
-                            <!-- Строка 5 -->
-                            <UIControls:WpfFilterCheckBox Grid.Row="5" Grid.Column="0" AttributeName="B5_Class"/>
-                            <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding B5_Class}"/>
-                            <TextBox Grid.Row="5" Grid.Column="2" Text="{Binding B5_h}"/>
-                            <TextBox Grid.Row="5" Grid.Column="3" Text="{Binding B5_e1}"/>
-                            <TextBox Grid.Row="5" Grid.Column="4" Text="{Binding B5_e2}"/>
-                            <ComboBox Grid.Row="5" Grid.Column="5" SelectedIndex="{Binding B5_WType}">
-                                <ComboBoxItem Content="Нет"/>
-                                <ComboBoxItem Content="Заводской"/>
-                                <ComboBoxItem Content="Монтажный"/>
-                            </ComboBox>
-                            <TextBox Grid.Row="5" Grid.Column="6" Text="{Binding B5_WSize}"/>
-
-                            <!-- Строка 6: Стыковой раскос -->
-                            <UIControls:WpfFilterCheckBox Grid.Row="6" Grid.Column="0" AttributeName="Splice_h"/>
-                            <TextBlock Grid.Row="6" Grid.Column="1" Text="Стыковой раскос" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" FontWeight="SemiBold" Foreground="#333"/>
-                            <TextBox Grid.Row="6" Grid.Column="2" Text="{Binding Splice_h}" Style="{StaticResource SpliceHStyle}"/>
-                            <TextBox Grid.Row="6" Grid.Column="3" Text="{Binding Splice_e1}"/>
-                            <TextBox Grid.Row="6" Grid.Column="4" Text="{Binding Splice_e2}"/>
-                            <ComboBox Grid.Row="6" Grid.Column="5" SelectedIndex="{Binding Splice_WType}">
-                                <ComboBoxItem Content="Нет"/>
-                                <ComboBoxItem Content="Заводской"/>
-                                <ComboBoxItem Content="Монтажный"/>
-                            </ComboBox>
-                            <TextBox Grid.Row="6" Grid.Column="6" Text="{Binding Splice_WSize}"/>
-
-                            <!-- Строка 7: Фасонка -->
-                            <UIControls:WpfFilterCheckBox Grid.Row="7" Grid.Column="0" AttributeName="Gusset_WType"/>
-                            <TextBlock Grid.Row="7" Grid.Column="1" Text="Фасонка" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" FontWeight="SemiBold" Foreground="#333"/>
-                            <TextBox Grid.Row="7" Grid.Column="2" IsEnabled="False" Background="#EFEFEF"/>
-                            <TextBox Grid.Row="7" Grid.Column="3" IsEnabled="False" Background="#EFEFEF"/>
-                            <TextBox Grid.Row="7" Grid.Column="4" IsEnabled="False" Background="#EFEFEF"/>
-                            <ComboBox Grid.Row="7" Grid.Column="5" SelectedIndex="{Binding Gusset_WType}">
-                                <ComboBoxItem Content="Нет"/>
-                                <ComboBoxItem Content="Заводской"/>
-                                <ComboBoxItem Content="Монтажный"/>
-                            </ComboBox>
-                            <TextBox Grid.Row="7" Grid.Column="6" Text="{Binding Gusset_WSize}"/>
-                        </Grid>
-
-                        <TextBlock Grid.Row="2" Text="Специальные классы (через пробел)" FontWeight="Bold" Margin="0,20,0,5"/>
-
-                        <Grid Grid.Row="3">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" MinWidth="25"/>
-                                <ColumnDefinition Width="150"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-
-                            <UIControls:WpfFilterCheckBox Grid.Row="0" Grid.Column="0" AttributeName="Class_Exclude"/>
-                            <Label Grid.Row="0" Grid.Column="1" Content="Исключаемые:"/>
-                            <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Class_Exclude}"/>
-
-                            <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="Class_Splice"/>
-                            <Label Grid.Row="1" Grid.Column="1" Content="Стыковые:"/>
-                            <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Class_Splice}"/>
-
-                            <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="SpliceConnType"/>
-                            <Label Grid.Row="2" Grid.Column="1" Content="Тип стыкового соед.:"/>
-                            <ComboBox Grid.Row="2" Grid.Column="2" SelectedIndex="{Binding SpliceConnType}">
-                                <ComboBoxItem Content="Сварка"/>
-                                <ComboBoxItem Content="Болты"/>
-                            </ComboBox>
-                        </Grid>
-                    </Grid>
-                </ScrollViewer>
-            </TabItem>
-
-            <!-- ТРЕТЬЯ ВКЛАДКА -->
-            <TabItem Header="Расстановка болтов">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel Margin="10">
-
-                        <!-- Блок 1: Параметры болтов -->
-                        <GroupBox Header="Параметры болтов" Margin="0,0,0,15" Padding="10">
-                            <uicontrols:BoltSettingsControl HorizontalAlignment="Left" />
-                        </GroupBox>
-
-                        <!-- Блок 2: Расстановка болтов -->
-                        <GroupBox Header="Расстановка болтов" Padding="10">
-                            <StackPanel HorizontalAlignment="Left">
-                                <uicontrols:BoltLayoutControl />
-                            </StackPanel>
-                        </GroupBox>
-
-                    </StackPanel>
-                </ScrollViewer>
-            </TabItem>
-            <!-- =============================================================== -->
-            <!-- 4. ВКЛАДКА ТЕСТ (Бывшая первая)                                 -->
-            <!-- =============================================================== -->
-            <TabItem Header="Тест">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel Margin="20" HorizontalAlignment="Left">
-                        <GroupBox Header="Свойства фасонки" Padding="15">
-                            <Grid>
+            <TabControl Grid.Row="1" Margin="5">
+                <!-- ВКЛАДКА 1 -->
+                <TabItem Header="Форма и зазоры">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="20" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <uicontrols:GussetShapeControl Margin="0,0,30,0"/>
+                            <Grid VerticalAlignment="Top">
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <!-- Профиль (Толщина) -->
-                                <UIControls:WpfFilterCheckBox AttributeName="GP_Thickness" Grid.Row="0" Grid.Column="0" Margin="0,0,10,0"/>
-                                <TextBlock Text="Профиль (Толщина):" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,5"/>
-                                <TextBox Text="{Binding GP_Thickness}" Grid.Row="0" Grid.Column="2" Margin="0,0,0,5"/>
+                                <UIControls:WpfFilterCheckBox AttributeName="Gusset_Shape_Mode" Grid.Row="0" Grid.Column="0" Margin="0,0,5,0"/>
+                                <TextBlock Text="Форма фасонки:" Grid.Row="0" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,0,5"/>
+                                <ComboBox SelectedIndex="{Binding Gusset_Shape_Mode}" Grid.Row="1" Grid.Column="1" Width="90" Height="65" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,10">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Image Source="{Binding}" Height="45" Width="50" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                    <sys:String>pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/Shape_Rect.png</sys:String>
+                                    <sys:String>pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/Shape_Chamfer.png</sys:String>
+                                </ComboBox>
 
-                                <!-- Класс -->
-                                <UIControls:WpfFilterCheckBox AttributeName="GP_Class" Grid.Row="1" Grid.Column="0" Margin="0,0,10,0"/>
-                                <TextBlock Text="Класс детали:" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"/>
-                                <TextBox Text="{Binding GP_Class}" Grid.Row="1" Grid.Column="2"/>
+                                <UIControls:WpfFilterCheckBox AttributeName="Gusset_Rounding" Grid.Row="2" Grid.Column="0" Margin="0,0,5,0"/>
+                                <TextBlock Text="Округление:" Grid.Row="2" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,0,5"/>
+                                <TextBox Text="{Binding Gusset_Rounding}" Grid.Row="3" Grid.Column="1" Width="90" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="0,0,0,15"/>
+
+                                <UIControls:WpfFilterCheckBox AttributeName="GP_PlanPos" Grid.Row="4" Grid.Column="0" Margin="0,0,5,0"/>
+                                <TextBlock Text="Положение в плане:" Grid.Row="4" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,0,5"/>
+                                <ComboBox SelectedIndex="{Binding GP_PlanPos}" Grid.Row="5" Grid.Column="1" Width="90" Height="65" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,15">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Image Source="{Binding}" Height="45" Width="50" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                    <sys:String>pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/PlanPos_Inside.png</sys:String>
+                                    <sys:String>pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/PlanPos_Outside.png</sys:String>
+                                </ComboBox>
+
+                                <UIControls:WpfFilterCheckBox AttributeName="Hound_Enabled" Grid.Row="6" Grid.Column="0" Margin="0,0,5,0"/>
+                                <TextBlock Text="Примыкание к торцу:" Grid.Row="6" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,0,5"/>
+                                <ComboBox SelectedIndex="{Binding Hound_Enabled}" Grid.Row="7" Grid.Column="1" Width="90" Height="65" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,10">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Image Source="{Binding}" Height="45" Width="50" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                    <sys:String>pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/Hound_Off.png</sys:String>
+                                    <sys:String>pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/Hound_On.png</sys:String>
+                                </ComboBox>
+
+                                <UIControls:WpfFilterCheckBox AttributeName="Hound_Distance" Grid.Row="8" Grid.Column="0" Margin="0,0,5,0"/>
+                                <TextBlock Text="Поле поиска:" Grid.Row="8" Grid.Column="1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,0,5"/>
+                                <TextBox Text="{Binding Hound_Distance}" Grid.Row="9" Grid.Column="1" Width="90" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="0,0,0,15"/>
                             </Grid>
-                        </GroupBox>
-                    </StackPanel>
-                </ScrollViewer>
-            </TabItem>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
 
-        </TabControl>
+                <!-- ВКЛАДКА 2 -->
+                <TabItem Header="Типы раскосов">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <Grid Margin="10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="200"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-        <UIControls:WpfOkApplyModifyGetOnOffCancel Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,5,0,5"
-            ApplyClicked="WpfOkApplyModifyGetOnOffCancel_ApplyClicked" 
-            CancelClicked="WpfOkApplyModifyGetOnOffCancel_CancelClicked" 
-            GetClicked="WpfOkApplyModifyGetOnOffCancel_GetClicked" 
-            ModifyClicked="WpfOkApplyModifyGetOnOffCancel_ModifyClicked" 
-            OkClicked="WpfOkApplyModifyGetOnOffCancel_OkClicked" 
-            OnOffClicked="WpfOkApplyModifyGetOnOffCancel_OnOffClicked"/>
+                            <Image Grid.Row="0" Source="pack://application:,,,/RAM.Plugins.ColumnJointGP1;component/Resources/R_Param.png" Stretch="Uniform" HorizontalAlignment="Center" Margin="0,0,0,37" Width="330"/>
+
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="30"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="32"/>
+                                    <RowDefinition Height="32"/>
+                                    <RowDefinition Height="32"/>
+                                    <RowDefinition Height="32"/>
+                                    <RowDefinition Height="32"/>
+                                    <RowDefinition Height="32"/>
+                                    <RowDefinition Height="32"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="Класс" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Row="0" Grid.Column="2" Text="Шов (h)" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Row="0" Grid.Column="3" Text="Отступ (e1)" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Row="0" Grid.Column="4" Text="Отступ (e2)" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Row="0" Grid.Column="5" Text="Тип шва" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Row="0" Grid.Column="6" Text="Катет" FontWeight="Bold" HorizontalAlignment="Center"/>
+
+                                <!-- Строки 1-5 -->
+                                <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="B1_Class"/>
+                                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding B1_Class}"/>
+                                <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding B1_h}"/>
+                                <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding B1_e1}"/>
+                                <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding B1_e2}"/>
+                                <ComboBox Grid.Row="1" Grid.Column="5" SelectedIndex="{Binding B1_WType}">
+                                    <ComboBoxItem Content="Нет"/>
+                                    <ComboBoxItem Content="Заводской"/>
+                                    <ComboBoxItem Content="Монтажный"/>
+                                </ComboBox>
+                                <TextBox Grid.Row="1" Grid.Column="6" Text="{Binding B1_WSize}"/>
+
+                                <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="B2_Class"/>
+                                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding B2_Class}"/>
+                                <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding B2_h}"/>
+                                <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding B2_e1}"/>
+                                <TextBox Grid.Row="2" Grid.Column="4" Text="{Binding B2_e2}"/>
+                                <ComboBox Grid.Row="2" Grid.Column="5" SelectedIndex="{Binding B2_WType}">
+                                    <ComboBoxItem Content="Нет"/>
+                                    <ComboBoxItem Content="Заводской"/>
+                                    <ComboBoxItem Content="Монтажный"/>
+                                </ComboBox>
+                                <TextBox Grid.Row="2" Grid.Column="6" Text="{Binding B2_WSize}"/>
+
+                                <UIControls:WpfFilterCheckBox Grid.Row="3" Grid.Column="0" AttributeName="B3_Class"/>
+                                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding B3_Class}"/>
+                                <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding B3_h}"/>
+                                <TextBox Grid.Row="3" Grid.Column="3" Text="{Binding B3_e1}"/>
+                                <TextBox Grid.Row="3" Grid.Column="4" Text="{Binding B3_e2}"/>
+                                <ComboBox Grid.Row="3" Grid.Column="5" SelectedIndex="{Binding B3_WType}">
+                                    <ComboBoxItem Content="Нет"/>
+                                    <ComboBoxItem Content="Заводской"/>
+                                    <ComboBoxItem Content="Монтажный"/>
+                                </ComboBox>
+                                <TextBox Grid.Row="3" Grid.Column="6" Text="{Binding B3_WSize}"/>
+
+                                <UIControls:WpfFilterCheckBox Grid.Row="4" Grid.Column="0" AttributeName="B4_Class"/>
+                                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding B4_Class}"/>
+                                <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding B4_h}"/>
+                                <TextBox Grid.Row="4" Grid.Column="3" Text="{Binding B4_e1}"/>
+                                <TextBox Grid.Row="4" Grid.Column="4" Text="{Binding B4_e2}"/>
+                                <ComboBox Grid.Row="4" Grid.Column="5" SelectedIndex="{Binding B4_WType}">
+                                    <ComboBoxItem Content="Нет"/>
+                                    <ComboBoxItem Content="Заводской"/>
+                                    <ComboBoxItem Content="Монтажный"/>
+                                </ComboBox>
+                                <TextBox Grid.Row="4" Grid.Column="6" Text="{Binding B4_WSize}"/>
+
+                                <UIControls:WpfFilterCheckBox Grid.Row="5" Grid.Column="0" AttributeName="B5_Class"/>
+                                <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding B5_Class}"/>
+                                <TextBox Grid.Row="5" Grid.Column="2" Text="{Binding B5_h}"/>
+                                <TextBox Grid.Row="5" Grid.Column="3" Text="{Binding B5_e1}"/>
+                                <TextBox Grid.Row="5" Grid.Column="4" Text="{Binding B5_e2}"/>
+                                <ComboBox Grid.Row="5" Grid.Column="5" SelectedIndex="{Binding B5_WType}">
+                                    <ComboBoxItem Content="Нет"/>
+                                    <ComboBoxItem Content="Заводской"/>
+                                    <ComboBoxItem Content="Монтажный"/>
+                                </ComboBox>
+                                <TextBox Grid.Row="5" Grid.Column="6" Text="{Binding B5_WSize}"/>
+
+                                <!-- Строка 6: Стыковой раскос -->
+                                <UIControls:WpfFilterCheckBox Grid.Row="6" Grid.Column="0" AttributeName="Splice_h"/>
+                                <TextBlock Grid.Row="6" Grid.Column="1" Text="Стыковой раскос" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" FontWeight="SemiBold" Foreground="#333"/>
+                                <TextBox Grid.Row="6" Grid.Column="2" Text="{Binding Splice_h}" Style="{StaticResource SpliceHStyle}"/>
+                                <TextBox Grid.Row="6" Grid.Column="3" Text="{Binding Splice_e1}"/>
+                                <TextBox Grid.Row="6" Grid.Column="4" Text="{Binding Splice_e2}"/>
+                                <ComboBox Grid.Row="6" Grid.Column="5" SelectedIndex="{Binding Splice_WType}">
+                                    <ComboBoxItem Content="Нет"/>
+                                    <ComboBoxItem Content="Заводской"/>
+                                    <ComboBoxItem Content="Монтажный"/>
+                                </ComboBox>
+                                <TextBox Grid.Row="6" Grid.Column="6" Text="{Binding Splice_WSize}"/>
+
+                                <!-- Строка 7: Фасонка -->
+                                <UIControls:WpfFilterCheckBox Grid.Row="7" Grid.Column="0" AttributeName="Gusset_WType"/>
+                                <TextBlock Grid.Row="7" Grid.Column="1" Text="Фасонка" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" FontWeight="SemiBold" Foreground="#333"/>
+                                <TextBox Grid.Row="7" Grid.Column="2" IsEnabled="False" Background="#EFEFEF"/>
+                                <TextBox Grid.Row="7" Grid.Column="3" IsEnabled="False" Background="#EFEFEF"/>
+                                <TextBox Grid.Row="7" Grid.Column="4" IsEnabled="False" Background="#EFEFEF"/>
+                                <ComboBox Grid.Row="7" Grid.Column="5" SelectedIndex="{Binding Gusset_WType}">
+                                    <ComboBoxItem Content="Нет"/>
+                                    <ComboBoxItem Content="Заводской"/>
+                                    <ComboBoxItem Content="Монтажный"/>
+                                </ComboBox>
+                                <TextBox Grid.Row="7" Grid.Column="6" Text="{Binding Gusset_WSize}"/>
+                            </Grid>
+
+                            <TextBlock Grid.Row="2" Text="Специальные классы (через пробел)" FontWeight="Bold" Margin="0,20,0,5"/>
+
+                            <Grid Grid.Row="3">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" MinWidth="25"/>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <UIControls:WpfFilterCheckBox Grid.Row="0" Grid.Column="0" AttributeName="Class_Exclude"/>
+                                <Label Grid.Row="0" Grid.Column="1" Content="Исключаемые:"/>
+                                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Class_Exclude}"/>
+
+                                <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="Class_Splice"/>
+                                <Label Grid.Row="1" Grid.Column="1" Content="Стыковые:"/>
+                                <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Class_Splice}"/>
+
+                                <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="SpliceConnType"/>
+                                <Label Grid.Row="2" Grid.Column="1" Content="Тип стыкового соед.:"/>
+                                <ComboBox Grid.Row="2" Grid.Column="2" SelectedIndex="{Binding SpliceConnType}">
+                                    <ComboBoxItem Content="Сварка"/>
+                                    <ComboBoxItem Content="Болты"/>
+                                </ComboBox>
+                            </Grid>
+                        </Grid>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- ВКЛАДКА 3 -->
+                <TabItem Header="Расстановка болтов">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="10">
+                            <GroupBox Header="Параметры болтов" Margin="0,0,0,15" Padding="10">
+                                <uicontrols:BoltSettingsControl HorizontalAlignment="Left" />
+                            </GroupBox>
+                            <GroupBox Header="Расстановка болтов" Padding="10">
+                                <StackPanel HorizontalAlignment="Left">
+                                    <uicontrols:BoltLayoutControl />
+                                </StackPanel>
+                            </GroupBox>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- =============================================================== -->
+                <!-- ВКЛАДКА 4: ТЕСТ (Кнопка вызова Overlay-панели фасонки)          -->
+                <!-- =============================================================== -->
+                <TabItem Header="Тест">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="20" HorizontalAlignment="Left">
+
+                            <!-- ИНКАПСУЛИРОВАННАЯ ПЛАШКА -->
+                            <uicontrols:GussetPlateControl x:Name="GussetPlate" 
+                                                           OpenOverlayRequested="GussetPlate_OpenOverlayRequested" 
+                                                           MasterCheckToggled="GussetPlate_MasterCheckToggled" />
+
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+            </TabControl>
+
+            <!-- СТАНДАРТНЫЕ КНОПКИ ТЕКЛЫ ВНИЗУ ОКНА -->
+            <UIControls:WpfOkApplyModifyGetOnOffCancel Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,5,0,5"
+                ApplyClicked="WpfOkApplyModifyGetOnOffCancel_ApplyClicked" 
+                CancelClicked="WpfOkApplyModifyGetOnOffCancel_CancelClicked" 
+                GetClicked="WpfOkApplyModifyGetOnOffCancel_GetClicked" 
+                ModifyClicked="WpfOkApplyModifyGetOnOffCancel_ModifyClicked" 
+                OkClicked="WpfOkApplyModifyGetOnOffCancel_OkClicked" 
+                OnOffClicked="WpfOkApplyModifyGetOnOffCancel_OnOffClicked"/>
+        </Grid>
+
+        <!-- =============================================================== -->
+        <!-- СЛОЙ 2: ИНКАПСУЛИРОВАННЫЙ OVERLAY КОНТРОЛ                       -->
+        <!-- =============================================================== -->
+        <localUI:GussetOverlayControl x:Name="GussetOverlay" 
+                                      Panel.ZIndex="100" 
+                                      OverlayClosed="GussetOverlay_OverlayClosed" 
+                                      d:IsHidden="True"/>
+        <!-- Вот эта магия! -->
     </Grid>
 </tsd:PluginWindowBase>

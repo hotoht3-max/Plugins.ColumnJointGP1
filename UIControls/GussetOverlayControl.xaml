@@ -1,0 +1,177 @@
+﻿<UserControl x:Class="RAM.Plugins.ColumnJointGP1.UIControls.GussetOverlayControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:UIControls="clr-namespace:Tekla.Structures.Dialog.UIControls;assembly=Tekla.Structures.Dialog"
+             xmlns:localConv="clr-namespace:RAM.Plugins.ColumnJointGP1.Converters">
+
+    <!-- Регистрация ресурса-конвертера внутри контрола -->
+    <UserControl.Resources>
+        <localConv:ClassToColorConverter x:Key="ClassToColorConverter" />
+    </UserControl.Resources>
+
+    <Canvas x:Name="OverlayCanvas" IsHitTestVisible="False">
+        <!-- Ширина и высота теперь берутся напрямую от холста, Left убран для видимости в редакторе -->
+        <Grid x:Name="OverlayPanel" 
+              Width="{Binding ActualWidth, ElementName=OverlayCanvas}" 
+              Height="{Binding ActualHeight, ElementName=OverlayCanvas}">
+
+            <Border Background="#90000000" />
+
+            <!-- Сама карточка окна -->
+            <Border Background="#F5F5F5" Width="420" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                    CornerRadius="5" Padding="15" BorderBrush="#CCCCCC" BorderThickness="1">
+                <Border.Effect>
+                    <DropShadowEffect Color="Black" BlurRadius="15" Opacity="0.3" Direction="270" ShadowDepth="4"/>
+                </Border.Effect>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Свойства детали" FontWeight="Bold" FontSize="14" Margin="0,0,0,15" Grid.Row="0"/>
+
+                    <!-- СЕРИЯ НУМЕРАЦИИ -->
+                    <GroupBox Header="Серия нумерации" Grid.Row="1" Padding="10" Margin="0,0,0,10">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="30"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Префикс" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                            <TextBlock Text="Нач. номер" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+
+                            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">
+                                <UIControls:WpfFilterCheckBox x:Name="chk_GP_PartPref" AttributeName="GP_PartPref" Margin="0,0,5,0" />
+                                <TextBlock Text="Деталь"/>
+                            </StackPanel>
+                            <TextBox Text="{Binding GP_PartPref}" Grid.Row="1" Grid.Column="1" Margin="0,0,5,5"/>
+                            <UIControls:WpfFilterCheckBox x:Name="chk_GP_PartNo" AttributeName="GP_PartNo" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                            <TextBox Text="{Binding GP_PartNo}" Grid.Row="1" Grid.Column="3" Margin="0,0,0,5"/>
+
+                            <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">
+                                <UIControls:WpfFilterCheckBox x:Name="chk_GP_AssyPref" AttributeName="GP_AssyPref" Margin="0,0,5,0" />
+                                <TextBlock Text="Сборка"/>
+                            </StackPanel>
+                            <TextBox Text="{Binding GP_AssyPref}" Grid.Row="2" Grid.Column="1" Margin="0,0,5,0"/>
+                            <UIControls:WpfFilterCheckBox x:Name="chk_GP_AssyNo" AttributeName="GP_AssyNo" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Center"/>
+                            <TextBox Text="{Binding GP_AssyNo}" Grid.Row="2" Grid.Column="3"/>
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- АТРИБУТЫ -->
+                    <GroupBox Header="Атрибуты" Grid.Row="2" Padding="10" Margin="0,0,0,10">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="80"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,0,5">
+                                <UIControls:WpfFilterCheckBox x:Name="chk_GP_Name" AttributeName="GP_Name" Margin="0,0,5,0"/>
+                                <TextBlock Text="Имя"/>
+                            </StackPanel>
+                            <TextBox Text="{Binding GP_Name}" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,5"/>
+
+                            <TextBlock Text="Профиль" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="22,0,0,5"/>
+                            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,5">
+                                <TextBlock Text="PL" VerticalAlignment="Center" Margin="0,0,5,0" FontWeight="Bold"/>
+                                <TextBox Text="{Binding GP_Thickness}" Width="150" />
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,0,5">
+                                <UIControls:WpfFilterCheckBox x:Name="chk_GP_Material" AttributeName="GP_Material" Margin="0,0,5,0"/>
+                                <TextBlock Text="Материал"/>
+                            </StackPanel>
+                            <TextBox Text="{Binding GP_Material}" Grid.Row="2" Grid.Column="1" Margin="0,0,5,5"/>
+                            <Button Content="Выбрать..." Grid.Row="2" Grid.Column="2" Margin="0,0,0,5" IsEnabled="False"/>
+
+                            <!-- Обновленный блок Класса с цветами -->
+                            <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center">
+                                <UIControls:WpfFilterCheckBox x:Name="chk_GP_Class" AttributeName="GP_Class" Margin="0,0,5,0"/>
+                                <TextBlock Text="Класс"/>
+                            </StackPanel>
+
+                            <!-- Хитрый ComboBox для классов -->
+                            <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,5">
+                                <ComboBox IsEditable="True" Text="{Binding GP_Class}" ItemsSource="{Binding StandardClasses}" Padding="22,0,0,0" Height="24">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Border Width="20" Height="12" Background="{Binding Converter={StaticResource ClassToColorConverter}}" BorderBrush="Black" BorderThickness="1" Margin="0,0,5,0"/>
+                                                <TextBlock Text="{Binding}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+
+                                <!-- Оверлей цвета поверх текстового поля (реагирует на ручной ввод) -->
+                                <Border Width="16" Height="12" HorizontalAlignment="Left" Margin="5,0,0,0"
+                                        Background="{Binding GP_Class, Converter={StaticResource ClassToColorConverter}}"
+                                        BorderBrush="Black" BorderThickness="1" IsHitTestVisible="False"/>
+                            </Grid>
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- UDA -->
+                    <GroupBox Header="Пользовательские атрибуты" Grid.Row="3" Padding="10" Margin="0,0,0,15">
+                        <StackPanel>
+                            <StackPanel Width="0" Height="0" Opacity="0">
+                                <UIControls:WpfFilterCheckBox x:Name="chk_GP_UDA" AttributeName="GP_UDA" />
+                                <TextBox Text="{Binding GP_UDA}" />
+                            </StackPanel>
+
+                            <ItemsControl ItemsSource="{Binding UdaRows}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="30"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                            <TextBox Text="{Binding Name, Mode=TwoWay}" Grid.Column="1" Margin="0,0,5,0" />
+                                            <TextBox Text="{Binding Value, Mode=TwoWay}" Grid.Column="2"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- УПРАВЛЕНИЕ -->
+                    <Grid Grid.Row="4" Margin="0,10,0,0">
+                        <!-- Левая группа кнопок -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <Button Content="OK" Width="80" Height="25" Margin="0,0,10,0" Click="BtnCloseOverlay_Click"/>
+                            <Button Content="Вкл / Выкл" Width="80" Height="25" Click="BtnToggleAllOverlay_Click"/>
+                        </StackPanel>
+
+                        <!-- Правая кнопка -->
+                        <Button Content="Отмена" Width="80" Height="25" HorizontalAlignment="Right" Click="BtnCancelOverlay_Click"/>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Canvas>
+</UserControl>
