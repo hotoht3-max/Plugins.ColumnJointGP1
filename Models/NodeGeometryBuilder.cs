@@ -12,7 +12,7 @@ namespace RAM.Plugins.ColumnJointGP1.Services
     {
         public static void BuildNode(Part branch, List<Part> lacings, JointData data)
         {
-            Logger.Write("Вход в геометрическое ядро BuildNode (Пространственный радар v2)");
+            Logger.Write("Вход в геометрическое ядро BuildNode (Пространственный радар v5 - Фикс визуала подрезок)");
 
             if (lacings.Count == 0 || !(branch is Beam branchBeam)) return;
 
@@ -65,13 +65,22 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                 var allBraces = JointManager.ProcessBraces(lacings, pCenter, v_Z, data);
                 if (allBraces.Count == 0) return;
 
+                foreach (var b in allBraces)
+                {
+                    if (b.IsSplice && data.SpliceConnType == 1)
+                    {
+                        double totalDistX = BoltDistanceParser.GetTotalDistance(data.SpliceBolt_DistX);
+                        b.h = data.SpliceBolt_Edge1 + totalDistX + data.SpliceBolt_Edge2;
+                    }
+                }
+
                 if (allBraces[0].BraceDir.Dot(v_X) < 0)
                 {
                     v_X *= -1.0;
                     v_Y *= -1.0;
                 }
 
-                // 3. АНАЛИЗ ФИЗИЧЕСКИХ ГРАНИЦ КОЛОННЫ ПО ОСЯМ X И Z
+                // 3. АНАЛИЗ ФИЗИЧЕСКИХ ГРАНИЦ КОЛОННЫ
                 double maxBranchX = GetMaxProjection(branchBeam.GetSolid(), pCenter, v_X);
                 TeklaProfileHelper.GetActualDimensions(branchBeam, out _, out _, out double branchTw);
 
@@ -174,11 +183,9 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                                 }
                             }
 
-                            // Правило: внутри колонны -> крепим к наружной грани. Снаружи -> ко внутренней.
                             bool isInside = (braceMax <= colMaxY + 2.0);
                             double candidateFace = isInside ? braceMax : braceMin;
 
-                            // Ищем самый смещенный внутрь уголок (ближе к центру)
                             if (Math.Abs(candidateFace) < Math.Abs(closestFaceY))
                             {
                                 closestFaceY = candidateFace;
@@ -192,11 +199,10 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                         }
                         else
                         {
-                            y_center = colMaxY + (t_pl / 2.0); // Фолбэк
+                            y_center = colMaxY + (t_pl / 2.0);
                         }
                     }
 
-                    // Подрезки и точки швов для текущей группы
                     double limitStrutUp = data.Offset_Brace / 2.0;
                     double limitStrutDown = data.Offset_Brace / 2.0;
 
@@ -235,35 +241,38 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                         b.CutOrigin = new Point(pCenter);
                         b.CutOrigin.Translate(b.BraceDir.X * t_final, b.BraceDir.Y * t_final, b.BraceDir.Z * t_final);
 
-                        CreateFitting(b.Beam, b.CutOrigin, b.BraceDir, currentVY);
+                        // --- ФИКС: Сдвиг визуальной плоскости подрезки ---
+                        Point visualCutOrigin = new Point(b.CutOrigin);
+                        visualCutOrigin.Translate(currentVY.X * y_center, currentVY.Y * y_center, currentVY.Z * y_center);
+
+                        CreateFitting(b.Beam, visualCutOrigin, b.BraceDir);
+                        // ---------------------------------------------------
 
                         Vector transDir = currentVY.Cross(b.BraceDir).GetNormal();
-                        double rTrans1 = GetMaxTransverseProjection(b.Beam.GetSolid(), pCenter, b.BraceDir, transDir);
-                        double rTrans2 = GetMaxTransverseProjection(b.Beam.GetSolid(), pCenter, b.BraceDir, transDir * -1.0);
-
-                        Point pCut1 = new Point(b.CutOrigin);
-                        pCut1.Translate(transDir.X * (rTrans1 + b.e1), transDir.Y * (rTrans1 + b.e1), transDir.Z * (rTrans1 + b.e1));
-
-                        Point pCut2 = new Point(b.CutOrigin);
-                        pCut2.Translate(transDir.X * -(rTrans2 + b.e2), transDir.Y * -(rTrans2 + b.e2), transDir.Z * -(rTrans2 + b.e2));
-
-                        Point pWeld1 = new Point(pCut1);
-                        pWeld1.Translate(b.BraceDir.X * b.h, b.BraceDir.Y * b.h, b.BraceDir.Z * b.h);
-
-                        Point pWeld2 = new Point(pCut2);
-                        pWeld2.Translate(b.BraceDir.X * b.h, b.BraceDir.Y * b.h, b.BraceDir.Z * b.h);
-
-                        if (transDir.Dot(v_Z) > 0)
+                        if (transDir.Dot(v_Z) < 0)
                         {
-                            b.TopWeldPt = pWeld1; b.BotWeldPt = pWeld2;
+                            transDir = transDir * -1.0;
                         }
-                        else
-                        {
-                            b.TopWeldPt = pWeld2; b.BotWeldPt = pWeld1;
-                        }
+
+                        double rTransTop = GetMaxTransverseProjection(b.Beam.GetSolid(), pCenter, b.BraceDir, transDir);
+                        double rTransBot = GetMaxTransverseProjection(b.Beam.GetSolid(), pCenter, b.BraceDir, transDir * -1.0);
+
+                        Point pCutTop = new Point(b.CutOrigin);
+                        pCutTop.Translate(transDir.X * (rTransTop + b.e1), transDir.Y * (rTransTop + b.e1), transDir.Z * (rTransTop + b.e1));
+
+                        Point pCutBot = new Point(b.CutOrigin);
+                        pCutBot.Translate(transDir.X * -(rTransBot + b.e2), transDir.Y * -(rTransBot + b.e2), transDir.Z * -(rTransBot + b.e2));
+
+                        Point pWeldTop = new Point(pCutTop);
+                        pWeldTop.Translate(b.BraceDir.X * b.h, b.BraceDir.Y * b.h, b.BraceDir.Z * b.h);
+
+                        Point pWeldBot = new Point(pCutBot);
+                        pWeldBot.Translate(b.BraceDir.X * b.h, b.BraceDir.Y * b.h, b.BraceDir.Z * b.h);
+
+                        b.TopWeldPt = pWeldTop;
+                        b.BotWeldPt = pWeldBot;
                     }
 
-                    // Замыкание переменных для ToGlobal
                     Vector locVY = currentVY;
                     double locYCenter = y_center;
 
@@ -315,7 +324,6 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                         return found ? maxT : double.NaN;
                     };
 
-                    // Итеративный солвер
                     List<Point> finalPolygon = new List<Point>();
                     double[] shiftTop = new double[currentBraces.Count];
                     double[] shiftBot = new double[currentBraces.Count];
@@ -454,21 +462,18 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                         for (int i = 0; i < currentBraces.Count; i++)
                         {
                             var b = currentBraces[i];
-                            Vector transDir = currentVY.Cross(b.BraceDir).GetNormal();
-                            double rTrans1 = GetMaxTransverseProjection(b.Beam.GetSolid(), pCenter, b.BraceDir, transDir);
-                            double rTrans2 = GetMaxTransverseProjection(b.Beam.GetSolid(), pCenter, b.BraceDir, transDir * -1.0);
 
-                            Point oTopEdge, oBotEdge;
-                            if (transDir.Dot(v_Z) > 0)
-                            {
-                                oTopEdge = new Point(b.CutOrigin); oTopEdge.Translate(transDir.X * rTrans1, transDir.Y * rTrans1, transDir.Z * rTrans1);
-                                oBotEdge = new Point(b.CutOrigin); oBotEdge.Translate(transDir.X * -rTrans2, transDir.Y * -rTrans2, transDir.Z * -rTrans2);
-                            }
-                            else
-                            {
-                                oTopEdge = new Point(b.CutOrigin); oTopEdge.Translate(transDir.X * -rTrans2, transDir.Y * -rTrans2, transDir.Z * -rTrans2);
-                                oBotEdge = new Point(b.CutOrigin); oBotEdge.Translate(transDir.X * rTrans1, transDir.Y * rTrans1, transDir.Z * rTrans1);
-                            }
+                            Vector transDir = currentVY.Cross(b.BraceDir).GetNormal();
+                            if (transDir.Dot(v_Z) < 0) transDir = transDir * -1.0;
+
+                            double rTransTop = GetMaxTransverseProjection(b.Beam.GetSolid(), pCenter, b.BraceDir, transDir);
+                            double rTransBot = GetMaxTransverseProjection(b.Beam.GetSolid(), pCenter, b.BraceDir, transDir * -1.0);
+
+                            Point oTopEdge = new Point(b.CutOrigin);
+                            oTopEdge.Translate(transDir.X * rTransTop, transDir.Y * rTransTop, transDir.Z * rTransTop);
+
+                            Point oBotEdge = new Point(b.CutOrigin);
+                            oBotEdge.Translate(transDir.X * -rTransBot, transDir.Y * -rTransBot, transDir.Z * -rTransBot);
 
                             double hFactTop = GetHFact(oTopEdge, b.BraceDir, finalPolygon);
                             double hFactBot = GetHFact(oBotEdge, b.BraceDir, finalPolygon);
@@ -488,49 +493,92 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                         }
                     }
 
-                    CreateRoughGusset(finalPolygon, data);
+                    ContourPlate gusset = CreateRoughGusset(finalPolygon, data);
+
+                    if (gusset != null)
+                    {
+                        WeldBuilderService.CreateFilletWeld(branchBeam, gusset, data.Gusset_WType, data.Gusset_WSize);
+
+                        foreach (var b in currentBraces)
+                        {
+                            WeldBuilderService.CreateFilletWeld(gusset, b.Beam, b.WeldType, b.WeldSize);
+
+                            if (b.IsSplice && data.SpliceConnType == 1)
+                            {
+                                BoltArray spliceBolts = new BoltArray();
+
+                                spliceBolts.PartToBeBolted = b.Beam;
+                                spliceBolts.PartToBoltTo = gusset;
+
+                                Vector transDir = currentVY.Cross(b.BraceDir).GetNormal();
+                                if (transDir.Dot(v_Z) < 0) transDir = transDir * -1.0;
+
+                                double rTransTop = GetMaxTransverseProjection(b.Beam.GetSolid(), pCenter, b.BraceDir, transDir);
+                                double rTransBot = GetMaxTransverseProjection(b.Beam.GetSolid(), pCenter, b.BraceDir, transDir * -1.0);
+
+                                double physicalCenterOffset = (rTransTop - rTransBot) / 2.0;
+
+                                Point boltStart = new Point(b.CutOrigin);
+                                boltStart.Translate(locVY.X * locYCenter, locVY.Y * locYCenter, locVY.Z * locYCenter);
+                                boltStart.Translate(transDir.X * physicalCenterOffset, transDir.Y * physicalCenterOffset, transDir.Z * physicalCenterOffset);
+                                boltStart.Translate(transDir.X * data.SpliceBolt_Offset, transDir.Y * data.SpliceBolt_Offset, transDir.Z * data.SpliceBolt_Offset);
+
+                                spliceBolts.FirstPosition = boltStart;
+
+                                Point p2 = new Point(boltStart);
+                                p2.Translate(b.BraceDir.X * 100, b.BraceDir.Y * 100, b.BraceDir.Z * 100);
+                                spliceBolts.SecondPosition = p2;
+
+                                spliceBolts.BoltSize = data.SpliceBolt_Size;
+                                spliceBolts.BoltStandard = data.SpliceBolt_Standard;
+                                spliceBolts.Tolerance = data.SpliceBolt_Tol;
+
+                                spliceBolts.Washer1 = data.SpliceBolt_W1 == 1;
+                                spliceBolts.Washer2 = data.SpliceBolt_W2 == 1;
+                                spliceBolts.Washer3 = data.SpliceBolt_W3 == 1;
+                                spliceBolts.Nut1 = data.SpliceBolt_N1 == 1;
+                                spliceBolts.Nut2 = data.SpliceBolt_N2 == 1;
+                                spliceBolts.Bolt = data.SpliceBolt_Bolt == 1;
+
+                                spliceBolts.Position.Depth = Position.DepthEnum.MIDDLE;
+                                spliceBolts.Position.Plane = Position.PlaneEnum.MIDDLE;
+                                spliceBolts.Position.Rotation = (signY > 0) ? Position.RotationEnum.TOP : Position.RotationEnum.BELOW;
+
+                                spliceBolts.StartPointOffset.Dx = data.SpliceBolt_Edge1;
+                                spliceBolts.StartPointOffset.Dy = 0.0;
+
+                                var distX = BoltDistanceParser.Parse(data.SpliceBolt_DistX);
+                                if (distX.Count > 0)
+                                    foreach (var d in distX) spliceBolts.AddBoltDistX(d);
+                                else
+                                    spliceBolts.AddBoltDistX(0);
+
+                                var distY = BoltDistanceParser.Parse(data.SpliceBolt_DistY);
+                                if (distY.Count > 0)
+                                    foreach (var d in distY) spliceBolts.AddBoltDistY(d);
+                                else
+                                    spliceBolts.AddBoltDistY(0);
+
+                                spliceBolts.Insert();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var b in currentBraces)
+                        {
+                            WeldBuilderService.CreateFilletWeld(branchBeam, b.Beam, b.WeldType, b.WeldSize);
+                        }
+                    }
                 }
 
-                // --- ТЕСТОВЫЙ БОЛТ ---
-                BoltArray testBolt = new BoltArray();
-                testBolt.PartToBeBolted = branchBeam;
-                testBolt.PartToBoltTo = branchBeam;
-
-                // Располагаем болт в теоретическом центре узла
-                testBolt.FirstPosition = pCenter;
-                testBolt.SecondPosition = new Point(pCenter.X, pCenter.Y, pCenter.Z + 100);
-
-                // Применяем настройки из UI
-                testBolt.BoltSize = data.SpliceBolt_Size;
-                testBolt.BoltStandard = data.SpliceBolt_Standard;
-                testBolt.Tolerance = data.SpliceBolt_Tol;
-
-                // Применяем маску комплекта
-                testBolt.Washer1 = data.SpliceBolt_W1 == 1;
-                testBolt.Washer2 = data.SpliceBolt_W2 == 1;
-                testBolt.Washer3 = data.SpliceBolt_W3 == 1;
-                testBolt.Nut1 = data.SpliceBolt_N1 == 1;
-                testBolt.Nut2 = data.SpliceBolt_N2 == 1;
-                testBolt.Bolt = data.SpliceBolt_Bolt == 1;
-
-                testBolt.Position.Depth = Position.DepthEnum.MIDDLE;
-                testBolt.Position.Plane = Position.PlaneEnum.MIDDLE;
-                testBolt.Position.Rotation = Position.RotationEnum.FRONT;
-
-                // Создаем группу из 1 болта (расстояния 0)
-                testBolt.AddBoltDistX(0);
-                testBolt.AddBoltDistY(0);
-
-                testBolt.Insert();
-
-                Logger.Write("Успешное применение пространственного радара.");
+                Logger.Write("Успешное применение пространственного радара с добавлением швов.");
             }
             catch (Exception ex)
             {
                 throw new Exception($"Сбой внутри BuildNode: {ex.Message}", ex);
             }
         }
-        // ... (остальные вспомогательные методы остаются без изменений)
 
         private static void CalculateCorner(Point pCenter, Vector v_X, Vector v_Z, Func<double, double, Point> toGlobal, BraceWrap brace, string angleStr, double straightLen, double gussetStartX, bool isTop, Point weldPt, out Point cornerPt, out Point colPt)
         {
@@ -620,22 +668,49 @@ namespace RAM.Plugins.ColumnJointGP1.Services
             return maxProj;
         }
 
-        private static void CreateFitting(Beam targetPart, Point planeOrigin, Vector braceDir, Vector planeNormalY)
+        private static void CreateFitting(Beam targetPart, Point planeOrigin, Vector braceDir)
         {
-            Vector axisX = planeNormalY.Cross(braceDir).GetNormal();
-            Vector axisY = planeNormalY;
+            // 1. Получаем физические габариты раскоса
+            TeklaProfileHelper.GetActualDimensions(targetPart, out double h, out double w, out _);
+            if (h < 10) h = 100; // Фолбэк от нулевых значений
+            if (w < 10) w = 100;
+
+            // 2. Берем локальные оси профиля раскоса
+            CoordinateSystem sys = targetPart.GetCoordinateSystem();
+            Vector localY = sys.AxisY.GetNormal();
+            Vector localZ = sys.AxisX.Cross(sys.AxisY).GetNormal();
+
+            double offset = 40.0; // Отступ +20мм на каждую сторону
+
+            // 3. Задаем векторы плоскости подрезки с нужным масштабом
+            Vector axisX = localY * (w + offset);
+            Vector axisY = localZ * (h + offset);
+
+            // 4. Защита от выворачивания нормали: 
+            // Нормаль плоскости (X cross Y) должна всегда смотреть внутрь остающейся части детали (по braceDir)
+            Vector normal = axisX.Cross(axisY).GetNormal();
+            if (normal.Dot(braceDir) < 0)
+            {
+                axisY = axisY * -1.0;
+            }
+
+            // 5. Центрируем визуальный макрос подрезки 
+            // Сдвиг точки в плоскости не меняет саму плоскость, но идеально центрирует квадрат в интерфейсе
+            Point symbolOrigin = new Point(planeOrigin);
+            symbolOrigin.Translate(-axisX.X / 2.0, -axisX.Y / 2.0, -axisX.Z / 2.0);
+            symbolOrigin.Translate(-axisY.X / 2.0, -axisY.Y / 2.0, -axisY.Z / 2.0);
 
             Fitting fitting = new Fitting
             {
-                Plane = new Plane { Origin = planeOrigin, AxisX = axisX, AxisY = axisY },
+                Plane = new Plane { Origin = symbolOrigin, AxisX = axisX, AxisY = axisY },
                 Father = targetPart
             };
             fitting.Insert();
         }
 
-        private static void CreateRoughGusset(List<Point> polygonPoints, JointData data)
+        private static ContourPlate CreateRoughGusset(List<Point> polygonPoints, JointData data)
         {
-            if (polygonPoints.Count < 3) return;
+            if (polygonPoints.Count < 3) return null;
 
             ContourPlate gusset = new ContourPlate();
 
@@ -654,6 +729,8 @@ namespace RAM.Plugins.ColumnJointGP1.Services
 
             gusset.Position.Depth = Position.DepthEnum.MIDDLE;
             gusset.Insert();
+
+            return gusset;
         }
     }
 }

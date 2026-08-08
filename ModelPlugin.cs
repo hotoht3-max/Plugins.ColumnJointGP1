@@ -27,26 +27,48 @@ namespace RAM.Plugins.ColumnJointGP1
         [StructuresField("B1_h")] public double B1_h = 150.0;
         [StructuresField("B1_e1")] public double B1_e1 = 30.0;
         [StructuresField("B1_e2")] public double B1_e2 = 30.0;
+        [StructuresField("B1_WType")] public int B1_WType = 1;
+        [StructuresField("B1_WSize")] public double B1_WSize = 6.0;
 
         [StructuresField("B2_Class")] public string B2_Class = "";
         [StructuresField("B2_h")] public double B2_h = 150.0;
         [StructuresField("B2_e1")] public double B2_e1 = 30.0;
         [StructuresField("B2_e2")] public double B2_e2 = 30.0;
+        [StructuresField("B2_WType")] public int B2_WType = 1;
+        [StructuresField("B2_WSize")] public double B2_WSize = 6.0;
 
         [StructuresField("B3_Class")] public string B3_Class = "";
         [StructuresField("B3_h")] public double B3_h = 150.0;
         [StructuresField("B3_e1")] public double B3_e1 = 30.0;
         [StructuresField("B3_e2")] public double B3_e2 = 30.0;
+        [StructuresField("B3_WType")] public int B3_WType = 1;
+        [StructuresField("B3_WSize")] public double B3_WSize = 6.0;
 
         [StructuresField("B4_Class")] public string B4_Class = "";
         [StructuresField("B4_h")] public double B4_h = 150.0;
         [StructuresField("B4_e1")] public double B4_e1 = 30.0;
         [StructuresField("B4_e2")] public double B4_e2 = 30.0;
+        [StructuresField("B4_WType")] public int B4_WType = 1;
+        [StructuresField("B4_WSize")] public double B4_WSize = 6.0;
 
         [StructuresField("B5_Class")] public string B5_Class = "";
         [StructuresField("B5_h")] public double B5_h = 150.0;
         [StructuresField("B5_e1")] public double B5_e1 = 30.0;
         [StructuresField("B5_e2")] public double B5_e2 = 30.0;
+        [StructuresField("B5_WType")] public int B5_WType = 1;
+        [StructuresField("B5_WSize")] public double B5_WSize = 6.0;
+
+        // Стыковой раскос
+        [StructuresField("SpliceConnType")] public int SpliceConnType = 0;
+        [StructuresField("Splice_h")] public double Splice_h = 150.0;
+        [StructuresField("Splice_e1")] public double Splice_e1 = 30.0;
+        [StructuresField("Splice_e2")] public double Splice_e2 = 30.0;
+        [StructuresField("Splice_WType")] public int Splice_WType = 1;
+        [StructuresField("Splice_WSize")] public double Splice_WSize = 6.0;
+
+        // Фасонка (Швы)
+        [StructuresField("Gusset_WType")] public int Gusset_WType = 1;
+        [StructuresField("Gusset_WSize")] public double Gusset_WSize = 6.0;
 
         [StructuresField("Class_Exclude")] public string Class_Exclude = "99";
         [StructuresField("Class_Splice")] public string Class_Splice = "15";
@@ -64,9 +86,7 @@ namespace RAM.Plugins.ColumnJointGP1
         // --- ФОРМООБРАЗОВАНИЕ И ИЩЕЙКА ---
         [StructuresField("Gusset_Shape_Mode")] public int Gusset_Shape_Mode = 1;
         [StructuresField("Gusset_Rounding")] public string Gusset_Rounding = "";
-
-        [StructuresField("GP_PlanPos")] public int GP_PlanPos = 0; // НОВОЕ ПОЛЕ
-
+        [StructuresField("GP_PlanPos")] public int GP_PlanPos = 0;
         [StructuresField("Hound_Enabled")] public int Hound_Enabled = 0;
         [StructuresField("Hound_Distance")] public double Hound_Distance = 500.0;
 
@@ -81,6 +101,13 @@ namespace RAM.Plugins.ColumnJointGP1
         [StructuresField("SpliceBolt_N1")] public int SpliceBolt_N1 = 1;
         [StructuresField("SpliceBolt_N2")] public int SpliceBolt_N2 = 0;
         [StructuresField("SpliceBolt_Bolt")] public int SpliceBolt_Bolt = 1;
+
+        // Расстановка болтов (Геометрия)
+        [StructuresField("SpliceBolt_Edge1")] public double SpliceBolt_Edge1 = 40.0;
+        [StructuresField("SpliceBolt_DistX")] public string SpliceBolt_DistX = "70";
+        [StructuresField("SpliceBolt_Edge2")] public double SpliceBolt_Edge2 = 40.0;
+        [StructuresField("SpliceBolt_DistY")] public string SpliceBolt_DistY = "60";
+        [StructuresField("SpliceBolt_Offset")] public double SpliceBolt_Offset = 0.0;
     }
 
     [Plugin("RAM_ColumnJointGP1")]

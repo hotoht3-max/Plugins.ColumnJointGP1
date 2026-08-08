@@ -4,7 +4,6 @@
         xmlns:tsd="clr-namespace:Tekla.Structures.Dialog;assembly=Tekla.Structures.Dialog"
         xmlns:UIControls="clr-namespace:Tekla.Structures.Dialog.UIControls;assembly=Tekla.Structures.Dialog"
         xmlns:localUI="clr-namespace:RAM.Plugins.ColumnJointGP1.UIControls"
-        xmlns:localControls="clr-namespace:RAM.Plugins.ColumnJointGP1.UIControls"
         xmlns:uicontrols="clr-namespace:RAM.Plugins.ColumnJointGP1.UIControls"
         x:Class="RAM.Plugins.ColumnJointGP1.MainWindow"
         Title="RAM ColumnJointGP1 (Альфа)" FontSize="14" Height="900" Width="1050">
@@ -29,7 +28,18 @@
                 <Setter Property="HorizontalAlignment" Value="Center"/>
                 <Setter Property="Margin" Value="5,0"/>
             </Style>
+            <!-- СТИЛЬ ДЛЯ БЛОКИРОВКИ h ПРИ ВЫБОРЕ БОЛТОВ -->
+            <Style x:Key="SpliceHStyle" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding SpliceConnType}" Value="1">
+                        <Setter Property="IsEnabled" Value="False"/>
+                        <Setter Property="Foreground" Value="Gray"/>
+                        <Setter Property="ToolTip" Value="Вычисляется автоматически по шагу болтов"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
         </Grid.Resources>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -158,6 +168,7 @@
                     </Grid>
                 </ScrollViewer>
             </TabItem>
+
             <!-- ВТОРАЯ ВКЛАДКА -->
             <TabItem Header="Типы раскосов">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -183,6 +194,9 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
+                                <!-- Новые пропорциональные колонки для швов -->
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -191,6 +205,9 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <!-- Строка для Фасонки -->
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <!-- Заголовки -->
@@ -198,6 +215,8 @@
                             <TextBlock Grid.Row="0" Grid.Column="2" Text="Шов (h)" FontWeight="Bold" HorizontalAlignment="Center"/>
                             <TextBlock Grid.Row="0" Grid.Column="3" Text="Отступ (e1)" FontWeight="Bold" HorizontalAlignment="Center"/>
                             <TextBlock Grid.Row="0" Grid.Column="4" Text="Отступ (e2)" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Row="0" Grid.Column="5" Text="Тип шва" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Row="0" Grid.Column="6" Text="Катет" FontWeight="Bold" HorizontalAlignment="Center"/>
 
                             <!-- Строка 1 -->
                             <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="B1_Class"/>
@@ -205,6 +224,12 @@
                             <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding B1_h}"/>
                             <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding B1_e1}"/>
                             <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding B1_e2}"/>
+                            <ComboBox Grid.Row="1" Grid.Column="5" SelectedIndex="{Binding B1_WType}">
+                                <ComboBoxItem Content="Нет"/>
+                                <ComboBoxItem Content="Заводской"/>
+                                <ComboBoxItem Content="Монтажный"/>
+                            </ComboBox>
+                            <TextBox Grid.Row="1" Grid.Column="6" Text="{Binding B1_WSize}"/>
 
                             <!-- Строка 2 -->
                             <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="B2_Class"/>
@@ -212,6 +237,12 @@
                             <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding B2_h}"/>
                             <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding B2_e1}"/>
                             <TextBox Grid.Row="2" Grid.Column="4" Text="{Binding B2_e2}"/>
+                            <ComboBox Grid.Row="2" Grid.Column="5" SelectedIndex="{Binding B2_WType}">
+                                <ComboBoxItem Content="Нет"/>
+                                <ComboBoxItem Content="Заводской"/>
+                                <ComboBoxItem Content="Монтажный"/>
+                            </ComboBox>
+                            <TextBox Grid.Row="2" Grid.Column="6" Text="{Binding B2_WSize}"/>
 
                             <!-- Строка 3 -->
                             <UIControls:WpfFilterCheckBox Grid.Row="3" Grid.Column="0" AttributeName="B3_Class"/>
@@ -219,6 +250,12 @@
                             <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding B3_h}"/>
                             <TextBox Grid.Row="3" Grid.Column="3" Text="{Binding B3_e1}"/>
                             <TextBox Grid.Row="3" Grid.Column="4" Text="{Binding B3_e2}"/>
+                            <ComboBox Grid.Row="3" Grid.Column="5" SelectedIndex="{Binding B3_WType}">
+                                <ComboBoxItem Content="Нет"/>
+                                <ComboBoxItem Content="Заводской"/>
+                                <ComboBoxItem Content="Монтажный"/>
+                            </ComboBox>
+                            <TextBox Grid.Row="3" Grid.Column="6" Text="{Binding B3_WSize}"/>
 
                             <!-- Строка 4 -->
                             <UIControls:WpfFilterCheckBox Grid.Row="4" Grid.Column="0" AttributeName="B4_Class"/>
@@ -226,6 +263,12 @@
                             <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding B4_h}"/>
                             <TextBox Grid.Row="4" Grid.Column="3" Text="{Binding B4_e1}"/>
                             <TextBox Grid.Row="4" Grid.Column="4" Text="{Binding B4_e2}"/>
+                            <ComboBox Grid.Row="4" Grid.Column="5" SelectedIndex="{Binding B4_WType}">
+                                <ComboBoxItem Content="Нет"/>
+                                <ComboBoxItem Content="Заводской"/>
+                                <ComboBoxItem Content="Монтажный"/>
+                            </ComboBox>
+                            <TextBox Grid.Row="4" Grid.Column="6" Text="{Binding B4_WSize}"/>
 
                             <!-- Строка 5 -->
                             <UIControls:WpfFilterCheckBox Grid.Row="5" Grid.Column="0" AttributeName="B5_Class"/>
@@ -233,6 +276,38 @@
                             <TextBox Grid.Row="5" Grid.Column="2" Text="{Binding B5_h}"/>
                             <TextBox Grid.Row="5" Grid.Column="3" Text="{Binding B5_e1}"/>
                             <TextBox Grid.Row="5" Grid.Column="4" Text="{Binding B5_e2}"/>
+                            <ComboBox Grid.Row="5" Grid.Column="5" SelectedIndex="{Binding B5_WType}">
+                                <ComboBoxItem Content="Нет"/>
+                                <ComboBoxItem Content="Заводской"/>
+                                <ComboBoxItem Content="Монтажный"/>
+                            </ComboBox>
+                            <TextBox Grid.Row="5" Grid.Column="6" Text="{Binding B5_WSize}"/>
+
+                            <!-- Строка 6: Стыковой раскос -->
+                            <UIControls:WpfFilterCheckBox Grid.Row="6" Grid.Column="0" AttributeName="Splice_h"/>
+                            <TextBlock Grid.Row="6" Grid.Column="1" Text="Стыковой раскос" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" FontWeight="SemiBold" Foreground="#333"/>
+                            <TextBox Grid.Row="6" Grid.Column="2" Text="{Binding Splice_h}" Style="{StaticResource SpliceHStyle}"/>
+                            <TextBox Grid.Row="6" Grid.Column="3" Text="{Binding Splice_e1}"/>
+                            <TextBox Grid.Row="6" Grid.Column="4" Text="{Binding Splice_e2}"/>
+                            <ComboBox Grid.Row="6" Grid.Column="5" SelectedIndex="{Binding Splice_WType}">
+                                <ComboBoxItem Content="Нет"/>
+                                <ComboBoxItem Content="Заводской"/>
+                                <ComboBoxItem Content="Монтажный"/>
+                            </ComboBox>
+                            <TextBox Grid.Row="6" Grid.Column="6" Text="{Binding Splice_WSize}"/>
+
+                            <!-- Строка 7: Фасонка -->
+                            <UIControls:WpfFilterCheckBox Grid.Row="7" Grid.Column="0" AttributeName="Gusset_WType"/>
+                            <TextBlock Grid.Row="7" Grid.Column="1" Text="Фасонка" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" FontWeight="SemiBold" Foreground="#333"/>
+                            <TextBox Grid.Row="7" Grid.Column="2" IsEnabled="False" Background="#EFEFEF"/>
+                            <TextBox Grid.Row="7" Grid.Column="3" IsEnabled="False" Background="#EFEFEF"/>
+                            <TextBox Grid.Row="7" Grid.Column="4" IsEnabled="False" Background="#EFEFEF"/>
+                            <ComboBox Grid.Row="7" Grid.Column="5" SelectedIndex="{Binding Gusset_WType}">
+                                <ComboBoxItem Content="Нет"/>
+                                <ComboBoxItem Content="Заводской"/>
+                                <ComboBoxItem Content="Монтажный"/>
+                            </ComboBox>
+                            <TextBox Grid.Row="7" Grid.Column="6" Text="{Binding Gusset_WSize}"/>
                         </Grid>
 
                         <TextBlock Grid.Row="2" Text="Специальные классы (через пробел)" FontWeight="Bold" Margin="0,20,0,5"/>
@@ -246,6 +321,7 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <UIControls:WpfFilterCheckBox Grid.Row="0" Grid.Column="0" AttributeName="Class_Exclude"/>
@@ -255,10 +331,18 @@
                             <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="Class_Splice"/>
                             <Label Grid.Row="1" Grid.Column="1" Content="Стыковые:"/>
                             <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Class_Splice}"/>
+
+                            <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="SpliceConnType"/>
+                            <Label Grid.Row="2" Grid.Column="1" Content="Тип стыкового соед.:"/>
+                            <ComboBox Grid.Row="2" Grid.Column="2" SelectedIndex="{Binding SpliceConnType}">
+                                <ComboBoxItem Content="Сварка"/>
+                                <ComboBoxItem Content="Болты"/>
+                            </ComboBox>
                         </Grid>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
+
             <!-- ТРЕТЬЯ ВКЛАДКА -->
             <TabItem Header="Расстановка болтов">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -266,13 +350,11 @@
 
                         <!-- Блок 1: Параметры болтов -->
                         <GroupBox Header="Параметры болтов" Margin="0,0,0,15" Padding="10">
-                            <!-- Явно задаем выравнивание по левому краю для надежности -->
                             <uicontrols:BoltSettingsControl HorizontalAlignment="Left" />
                         </GroupBox>
 
                         <!-- Блок 2: Расстановка болтов -->
                         <GroupBox Header="Расстановка болтов" Padding="10">
-                            <!-- ИЗМЕНЕНО: Center заменен на Left -->
                             <StackPanel HorizontalAlignment="Left">
                                 <uicontrols:BoltLayoutControl />
                             </StackPanel>

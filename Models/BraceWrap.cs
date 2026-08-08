@@ -12,6 +12,10 @@ namespace RAM.Plugins.ColumnJointGP1.Models
         public double e1 { get; set; }
         public double e2 { get; set; }
 
+        // НОВЫЕ ПОЛЯ ДЛЯ СВАРКИ
+        public int WeldType { get; set; }
+        public double WeldSize { get; set; }
+
         public Vector BraceDir { get; set; }
         public double ZAngle { get; set; }
 
@@ -22,8 +26,6 @@ namespace RAM.Plugins.ColumnJointGP1.Models
         public bool IsTop { get; set; }
         public bool IsBottom { get; set; }
         public bool IsStrut { get; set; }
-
-        // НОВЫЙ ФЛАГ: Стыковой раскос
         public bool IsSplice { get; set; }
     }
 }

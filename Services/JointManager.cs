@@ -26,21 +26,29 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                 if (!(part is Beam beam)) continue;
                 if (excludeList.Contains(beam.Class)) continue;
 
-                // --- НОВЫЙ ФИЛЬТР: ТОЛЬКО УГОЛКИ ---
                 string profName = beam.Profile.ProfileString;
                 if (string.IsNullOrWhiteSpace(profName) || !profName.StartsWith("L", StringComparison.OrdinalIgnoreCase))
                 {
-                    continue; // Игнорируем трубы, швеллеры и прочий мусор
+                    continue;
                 }
 
                 double h = 150.0, e1 = 30.0, e2 = 30.0;
+                int wType = 1; double wSize = 6.0; // Значения по умолчанию
+                bool isSplice = spliceList.Contains(beam.Class);
 
-                var settings = data.BraceTypes?.LastOrDefault(s => s.Class == beam.Class);
-                if (settings != null)
+                if (isSplice)
                 {
-                    h = settings.h;
-                    e1 = settings.e1;
-                    e2 = settings.e2;
+                    h = data.Splice_h; e1 = data.Splice_e1; e2 = data.Splice_e2;
+                    wType = data.Splice_WType; wSize = data.Splice_WSize; // Подтягиваем из стыкового
+                }
+                else
+                {
+                    var settings = data.BraceTypes?.LastOrDefault(s => s.Class == beam.Class);
+                    if (settings != null)
+                    {
+                        h = settings.h; e1 = settings.e1; e2 = settings.e2;
+                        wType = settings.WeldType; wSize = settings.WeldSize; // Подтягиваем из обычной таблицы
+                    }
                 }
 
                 double d1 = Distance(beam.StartPoint, pCenter);
@@ -56,9 +64,11 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                     h = h,
                     e1 = e1,
                     e2 = e2,
+                    WeldType = wType, // Записываем
+                    WeldSize = wSize, // Записываем
                     BraceDir = braceDir,
                     ZAngle = braceDir.Dot(v_Z),
-                    IsSplice = spliceList.Contains(beam.Class)
+                    IsSplice = isSplice
                 });
             }
 

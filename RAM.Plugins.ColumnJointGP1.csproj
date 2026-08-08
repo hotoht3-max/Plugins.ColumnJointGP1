@@ -93,10 +93,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Services\BoltCatalogService.cs" />
+    <Compile Include="Services\BoltDistanceParser.cs" />
     <Compile Include="Services\JointManager.cs" />
     <Compile Include="Services\Logger.cs" />
     <Compile Include="Services\PluginDataMapper.cs" />
     <Compile Include="Services\TeklaProfileHelper.cs" />
+    <Compile Include="Services\WeldBuilderService.cs" />
     <Compile Include="UIControls\BoltLayoutControl.xaml.cs">
       <DependentUpon>BoltLayoutControl.xaml</DependentUpon>
     </Compile>

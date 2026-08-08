@@ -15,8 +15,7 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                 Offset_Brace = data.Offset_Brace,
 
                 Gusset_Shape_Mode = data.Gusset_Shape_Mode,
-                GP_PlanPos = data.GP_PlanPos, // НОВЫЙ МАППИНГ
-                // Маппинг Ищейки
+                GP_PlanPos = data.GP_PlanPos,
                 HoundEnabled = data.Hound_Enabled,
                 HoundDistance = data.Hound_Distance,
 
@@ -27,6 +26,16 @@ namespace RAM.Plugins.ColumnJointGP1.Services
 
                 Class_Exclude = data.Class_Exclude,
                 Class_Splice = data.Class_Splice,
+
+                SpliceConnType = data.SpliceConnType,
+                Splice_h = data.Splice_h,
+                Splice_e1 = data.Splice_e1,
+                Splice_e2 = data.Splice_e2,
+                Splice_WType = data.Splice_WType,
+                Splice_WSize = data.Splice_WSize,
+
+                Gusset_WType = data.Gusset_WType,
+                Gusset_WSize = data.Gusset_WSize,
 
                 BraceTypes = new List<BraceSettings>(),
 
@@ -43,7 +52,6 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                     UDA = data.GP_UDA
                 },
 
-                // ... внутри var jointData = new JointData { ... }
                 SpliceBolt_Size = data.SpliceBolt_Size,
                 SpliceBolt_Standard = data.SpliceBolt_Standard,
                 SpliceBolt_Tol = data.SpliceBolt_Tol,
@@ -53,9 +61,14 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                 SpliceBolt_N1 = data.SpliceBolt_N1,
                 SpliceBolt_N2 = data.SpliceBolt_N2,
                 SpliceBolt_Bolt = data.SpliceBolt_Bolt,
+
+                SpliceBolt_Edge1 = data.SpliceBolt_Edge1,
+                SpliceBolt_DistX = data.SpliceBolt_DistX,
+                SpliceBolt_Edge2 = data.SpliceBolt_Edge2,
+                SpliceBolt_DistY = data.SpliceBolt_DistY,
+                SpliceBolt_Offset = data.SpliceBolt_Offset
             };
 
-            // Парсинг округления: если текст пустой или кривой, оставляем null
             if (double.TryParse(data.Gusset_Rounding, out double roundingVal))
             {
                 jointData.GussetRounding = roundingVal;
@@ -65,22 +78,20 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                 jointData.GussetRounding = null;
             }
 
-            AddBraceSetting(jointData.BraceTypes, data.B1_Class, data.B1_h, data.B1_e1, data.B1_e2);
-
-            AddBraceSetting(jointData.BraceTypes, data.B1_Class, data.B1_h, data.B1_e1, data.B1_e2);
-            AddBraceSetting(jointData.BraceTypes, data.B2_Class, data.B2_h, data.B2_e1, data.B2_e2);
-            AddBraceSetting(jointData.BraceTypes, data.B3_Class, data.B3_h, data.B3_e1, data.B3_e2);
-            AddBraceSetting(jointData.BraceTypes, data.B4_Class, data.B4_h, data.B4_e1, data.B4_e2);
-            AddBraceSetting(jointData.BraceTypes, data.B5_Class, data.B5_h, data.B5_e1, data.B5_e2);
+            AddBraceSetting(jointData.BraceTypes, data.B1_Class, data.B1_h, data.B1_e1, data.B1_e2, data.B1_WType, data.B1_WSize);
+            AddBraceSetting(jointData.BraceTypes, data.B2_Class, data.B2_h, data.B2_e1, data.B2_e2, data.B2_WType, data.B2_WSize);
+            AddBraceSetting(jointData.BraceTypes, data.B3_Class, data.B3_h, data.B3_e1, data.B3_e2, data.B3_WType, data.B3_WSize);
+            AddBraceSetting(jointData.BraceTypes, data.B4_Class, data.B4_h, data.B4_e1, data.B4_e2, data.B4_WType, data.B4_WSize);
+            AddBraceSetting(jointData.BraceTypes, data.B5_Class, data.B5_h, data.B5_e1, data.B5_e2, data.B5_WType, data.B5_WSize);
 
             return jointData;
         }
 
-        private static void AddBraceSetting(List<BraceSettings> list, string cls, double h, double e1, double e2)
+        private static void AddBraceSetting(List<BraceSettings> list, string cls, double h, double e1, double e2, int wType, double wSize)
         {
             if (!string.IsNullOrWhiteSpace(cls))
             {
-                list.Add(new BraceSettings { Class = cls.Trim(), h = h, e1 = e1, e2 = e2 });
+                list.Add(new BraceSettings { Class = cls.Trim(), h = h, e1 = e1, e2 = e2, WeldType = wType, WeldSize = wSize });
             }
         }
 
