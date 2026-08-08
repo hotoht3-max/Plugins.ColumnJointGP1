@@ -69,6 +69,18 @@ namespace RAM.Plugins.ColumnJointGP1
 
         [StructuresField("Hound_Enabled")] public int Hound_Enabled = 0;
         [StructuresField("Hound_Distance")] public double Hound_Distance = 500.0;
+
+        // --- БОЛТОВОЕ СОЕДИНЕНИЕ (СТЫК) ---
+        [StructuresField("SpliceBolt_Size")] public double SpliceBolt_Size = 20.0;
+        [StructuresField("SpliceBolt_Standard")] public string SpliceBolt_Standard = "7798";
+        [StructuresField("SpliceBolt_Tol")] public double SpliceBolt_Tol = 2.0;
+
+        [StructuresField("SpliceBolt_W1")] public int SpliceBolt_W1 = 1;
+        [StructuresField("SpliceBolt_W2")] public int SpliceBolt_W2 = 0;
+        [StructuresField("SpliceBolt_W3")] public int SpliceBolt_W3 = 1;
+        [StructuresField("SpliceBolt_N1")] public int SpliceBolt_N1 = 1;
+        [StructuresField("SpliceBolt_N2")] public int SpliceBolt_N2 = 0;
+        [StructuresField("SpliceBolt_Bolt")] public int SpliceBolt_Bolt = 1;
     }
 
     [Plugin("RAM_ColumnJointGP1")]

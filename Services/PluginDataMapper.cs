@@ -41,7 +41,18 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                     Name = data.GP_Name,
                     Class = data.GP_Class,
                     UDA = data.GP_UDA
-                }
+                },
+
+                // ... внутри var jointData = new JointData { ... }
+                SpliceBolt_Size = data.SpliceBolt_Size,
+                SpliceBolt_Standard = data.SpliceBolt_Standard,
+                SpliceBolt_Tol = data.SpliceBolt_Tol,
+                SpliceBolt_W1 = data.SpliceBolt_W1,
+                SpliceBolt_W2 = data.SpliceBolt_W2,
+                SpliceBolt_W3 = data.SpliceBolt_W3,
+                SpliceBolt_N1 = data.SpliceBolt_N1,
+                SpliceBolt_N2 = data.SpliceBolt_N2,
+                SpliceBolt_Bolt = data.SpliceBolt_Bolt,
             };
 
             // Парсинг округления: если текст пустой или кривой, оставляем null

@@ -35,5 +35,16 @@ namespace RAM.Plugins.ColumnJointGP1.Models
         public string Class_Splice { get; set; }
 
         public PartSettings GussetPlate { get; set; }
+
+        // БОЛТЫ СТЫКА
+        public double SpliceBolt_Size { get; set; }
+        public string SpliceBolt_Standard { get; set; }
+        public double SpliceBolt_Tol { get; set; }
+        public int SpliceBolt_W1 { get; set; }
+        public int SpliceBolt_W2 { get; set; }
+        public int SpliceBolt_W3 { get; set; }
+        public int SpliceBolt_N1 { get; set; }
+        public int SpliceBolt_N2 { get; set; }
+        public int SpliceBolt_Bolt { get; set; }
     }
 }

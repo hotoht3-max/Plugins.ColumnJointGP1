@@ -92,10 +92,17 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Services\BoltCatalogService.cs" />
     <Compile Include="Services\JointManager.cs" />
     <Compile Include="Services\Logger.cs" />
     <Compile Include="Services\PluginDataMapper.cs" />
     <Compile Include="Services\TeklaProfileHelper.cs" />
+    <Compile Include="UIControls\BoltLayoutControl.xaml.cs">
+      <DependentUpon>BoltLayoutControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UIControls\BoltSettingsControl.xaml.cs">
+      <DependentUpon>BoltSettingsControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UIControls\HeaderSystemControl.xaml.cs">
       <DependentUpon>HeaderSystemControl.xaml</DependentUpon>
     </Compile>
@@ -144,12 +151,22 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UIControls\BoltLayoutControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UIControls\BoltSettingsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UIControls\HeaderSystemControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\sl_bolt_structure.bmp" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

@@ -491,6 +491,38 @@ namespace RAM.Plugins.ColumnJointGP1.Services
                     CreateRoughGusset(finalPolygon, data);
                 }
 
+                // --- ТЕСТОВЫЙ БОЛТ ---
+                BoltArray testBolt = new BoltArray();
+                testBolt.PartToBeBolted = branchBeam;
+                testBolt.PartToBoltTo = branchBeam;
+
+                // Располагаем болт в теоретическом центре узла
+                testBolt.FirstPosition = pCenter;
+                testBolt.SecondPosition = new Point(pCenter.X, pCenter.Y, pCenter.Z + 100);
+
+                // Применяем настройки из UI
+                testBolt.BoltSize = data.SpliceBolt_Size;
+                testBolt.BoltStandard = data.SpliceBolt_Standard;
+                testBolt.Tolerance = data.SpliceBolt_Tol;
+
+                // Применяем маску комплекта
+                testBolt.Washer1 = data.SpliceBolt_W1 == 1;
+                testBolt.Washer2 = data.SpliceBolt_W2 == 1;
+                testBolt.Washer3 = data.SpliceBolt_W3 == 1;
+                testBolt.Nut1 = data.SpliceBolt_N1 == 1;
+                testBolt.Nut2 = data.SpliceBolt_N2 == 1;
+                testBolt.Bolt = data.SpliceBolt_Bolt == 1;
+
+                testBolt.Position.Depth = Position.DepthEnum.MIDDLE;
+                testBolt.Position.Plane = Position.PlaneEnum.MIDDLE;
+                testBolt.Position.Rotation = Position.RotationEnum.FRONT;
+
+                // Создаем группу из 1 болта (расстояния 0)
+                testBolt.AddBoltDistX(0);
+                testBolt.AddBoltDistY(0);
+
+                testBolt.Insert();
+
                 Logger.Write("Успешное применение пространственного радара.");
             }
             catch (Exception ex)

@@ -4,6 +4,8 @@
         xmlns:tsd="clr-namespace:Tekla.Structures.Dialog;assembly=Tekla.Structures.Dialog"
         xmlns:UIControls="clr-namespace:Tekla.Structures.Dialog.UIControls;assembly=Tekla.Structures.Dialog"
         xmlns:localUI="clr-namespace:RAM.Plugins.ColumnJointGP1.UIControls"
+        xmlns:localControls="clr-namespace:RAM.Plugins.ColumnJointGP1.UIControls"
+        xmlns:uicontrols="clr-namespace:RAM.Plugins.ColumnJointGP1.UIControls"
         x:Class="RAM.Plugins.ColumnJointGP1.MainWindow"
         Title="RAM ColumnJointGP1 (Альфа)" FontSize="14" Height="900" Width="1050">
     <Grid>
@@ -255,6 +257,28 @@
                             <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Class_Splice}"/>
                         </Grid>
                     </Grid>
+                </ScrollViewer>
+            </TabItem>
+            <!-- ТРЕТЬЯ ВКЛАДКА -->
+            <TabItem Header="Расстановка болтов">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="10">
+
+                        <!-- Блок 1: Параметры болтов -->
+                        <GroupBox Header="Параметры болтов" Margin="0,0,0,15" Padding="10">
+                            <!-- Явно задаем выравнивание по левому краю для надежности -->
+                            <uicontrols:BoltSettingsControl HorizontalAlignment="Left" />
+                        </GroupBox>
+
+                        <!-- Блок 2: Расстановка болтов -->
+                        <GroupBox Header="Расстановка болтов" Padding="10">
+                            <!-- ИЗМЕНЕНО: Center заменен на Left -->
+                            <StackPanel HorizontalAlignment="Left">
+                                <uicontrols:BoltLayoutControl />
+                            </StackPanel>
+                        </GroupBox>
+
+                    </StackPanel>
                 </ScrollViewer>
             </TabItem>
         </TabControl>

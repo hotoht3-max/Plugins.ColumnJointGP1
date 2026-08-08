@@ -1,0 +1,111 @@
+﻿<UserControl x:Class="RAM.Plugins.ColumnJointGP1.UIControls.BoltLayoutControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:tsd="clr-namespace:Tekla.Structures.Dialog;assembly=Tekla.Structures.Dialog"
+             xmlns:UIControls="clr-namespace:Tekla.Structures.Dialog.UIControls;assembly=Tekla.Structures.Dialog">
+
+    <!-- Общий контейнер -->
+    <Grid Margin="10" HorizontalAlignment="Center" VerticalAlignment="Top">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Эскиз -->
+            <RowDefinition Height="Auto"/>
+            <!-- Поле смещения -->
+        </Grid.RowDefinitions>
+
+        <!-- ================= ЭСКИЗ ================= -->
+        <Canvas Grid.Row="0" Width="350" Height="210" Background="Transparent" Margin="0,15,0,10">
+
+            <!-- 1. ДЕТАЛИ -->
+            <!-- Желтая деталь (Левый край: 70, Правый край: 260) -->
+            <Rectangle Canvas.Left="70" Canvas.Top="60" Width="190" Height="140" Fill="#E5D07B" Stroke="Black" StrokeThickness="1"/>
+
+            <!-- Синяя деталь (Левый край: 100, Правый край: 300) -->
+            <Rectangle Canvas.Left="100" Canvas.Top="85" Width="200" Height="90" Fill="#60A0D0" Stroke="Black" StrokeThickness="1"/>
+
+            <!-- 2. БОЛТЫ (Строго отцентрированы по оси X=180) -->
+            <!-- Болт 1 (Верхний левый, Центр: 140, 105) -->
+            <Polygon Points="134,95 146,95 152,105 146,115 134,115 128,105" Fill="#C0C0C0" Stroke="Black" StrokeThickness="1"/>
+            <Ellipse Canvas.Left="139" Canvas.Top="104" Width="2" Height="2" Fill="Black"/>
+
+            <!-- Болт 2 (Верхний правый, Центр: 220, 105) -->
+            <Polygon Points="214,95 226,95 232,105 226,115 214,115 208,105" Fill="#C0C0C0" Stroke="Black" StrokeThickness="1"/>
+            <Ellipse Canvas.Left="219" Canvas.Top="104" Width="2" Height="2" Fill="Black"/>
+
+            <!-- Болт 3 (Нижний левый, Центр: 140, 155) -->
+            <Polygon Points="134,145 146,145 152,155 146,165 134,165 128,155" Fill="#C0C0C0" Stroke="Black" StrokeThickness="1"/>
+            <Ellipse Canvas.Left="139" Canvas.Top="154" Width="2" Height="2" Fill="Black"/>
+
+            <!-- Болт 4 (Нижний правый, Центр: 220, 155) -->
+            <Polygon Points="214,145 226,145 232,155 226,165 214,165 208,155" Fill="#C0C0C0" Stroke="Black" StrokeThickness="1"/>
+            <Ellipse Canvas.Left="219" Canvas.Top="154" Width="2" Height="2" Fill="Black"/>
+
+            <!-- 3. ОСЕВЫЕ ЛИНИИ БОЛТОВ -->
+            <Line X1="120" Y1="105" X2="240" Y2="105" Stroke="Black" StrokeThickness="1" StrokeDashArray="8,3,2,3"/>
+            <Line X1="120" Y1="155" X2="240" Y2="155" Stroke="Black" StrokeThickness="1" StrokeDashArray="8,3,2,3"/>
+            <Line X1="140" Y1="85" X2="140" Y2="175" Stroke="Black" StrokeThickness="1" StrokeDashArray="8,3,2,3"/>
+            <Line X1="220" Y1="85" X2="220" Y2="175" Stroke="Black" StrokeThickness="1" StrokeDashArray="8,3,2,3"/>
+
+            <!-- 4. РАЗМЕРНЫЕ И ВЫНОСНЫЕ ЛИНИИ -->
+            <!-- Верхняя цепь -->
+            <Line X1="90" Y1="40" X2="270" Y2="40" Stroke="Black" StrokeThickness="1"/>
+            <!-- Базовая линия -->
+            <Line X1="100" Y1="85" X2="100" Y2="35" Stroke="Black" StrokeThickness="1"/>
+            <!-- Выноска (Левый край синей детали) -->
+            <Line X1="140" Y1="90" X2="140" Y2="35" Stroke="Black" StrokeThickness="1"/>
+            <!-- Выноска (Ось болтов 1) -->
+            <Line X1="220" Y1="90" X2="220" Y2="35" Stroke="Black" StrokeThickness="1"/>
+            <!-- Выноска (Ось болтов 2) -->
+            <Line X1="260" Y1="60" X2="260" Y2="35" Stroke="Black" StrokeThickness="1"/>
+            <!-- Выноска (Правый край желтой детали) -->
+            <Line X1="180" Y1="40" X2="180" Y2="20" Stroke="Black" StrokeThickness="1"/>
+            <!-- Центральная ножка -->
+
+            <!-- Левая цепь -->
+            <Line X1="50" Y1="95" X2="50" Y2="165" Stroke="Black" StrokeThickness="1"/>
+            <!-- Базовая линия -->
+            <Line X1="120" Y1="105" X2="45" Y2="105" Stroke="Black" StrokeThickness="1"/>
+            <!-- Выноска (Верхние болты) -->
+            <Line X1="120" Y1="155" X2="45" Y2="155" Stroke="Black" StrokeThickness="1"/>
+            <!-- Выноска (Нижние болты) -->
+
+            <!-- 5. ЗАСЕЧКИ -->
+            <!-- Верхние -->
+            <Line X1="96" Y1="44" X2="104" Y2="36" Stroke="Black" StrokeThickness="1.5"/>
+            <Line X1="136" Y1="44" X2="144" Y2="36" Stroke="Black" StrokeThickness="1.5"/>
+            <Line X1="216" Y1="44" X2="224" Y2="36" Stroke="Black" StrokeThickness="1.5"/>
+            <Line X1="256" Y1="44" X2="264" Y2="36" Stroke="Black" StrokeThickness="1.5"/>
+            <!-- Левые -->
+            <Line X1="46" Y1="109" X2="54" Y2="101" Stroke="Black" StrokeThickness="1.5"/>
+            <Line X1="46" Y1="159" X2="54" Y2="151" Stroke="Black" StrokeThickness="1.5"/>
+
+            <!-- 6. РАСШИРЕННЫЕ ПОЛЯ ВВОДА (Сдвинуты по эскизу пользователя) -->
+            <!-- Отступ слева (Смещен влево над размером) -->
+            <UIControls:WpfFilterCheckBox AttributeName="SpliceBolt_Edge1" Canvas.Left="30" Canvas.Top="17" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding SpliceBolt_Edge1}" Canvas.Left="48" Canvas.Top="14" Width="45" Height="22" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+            <!-- Центральный шаг (Уведен вправо от центральной ножки) -->
+            <UIControls:WpfFilterCheckBox AttributeName="SpliceBolt_DistX" Canvas.Left="130" HorizontalAlignment="Left" VerticalAlignment="Center" Width="15"/>
+            <TextBox Text="{Binding SpliceBolt_DistX}" Canvas.Left="150" Canvas.Top="-3" Width="79" Height="22" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+            <!-- Отступ справа (Вынесен вправо за габарит) -->
+            <UIControls:WpfFilterCheckBox AttributeName="SpliceBolt_Edge2" Canvas.Left="270" Canvas.Top="17"/>
+            <TextBox Text="{Binding SpliceBolt_Edge2}" Canvas.Left="288" Canvas.Top="14" Width="45" Height="22" HorizontalContentAlignment="Center"/>
+
+            <!-- Вертикальный шаг (Приподнят наверх вдоль линии) -->
+            <UIControls:WpfFilterCheckBox AttributeName="SpliceBolt_DistY" Canvas.Left="-12" Canvas.Top="118"/>
+            <TextBox Text="{Binding SpliceBolt_DistY}" Canvas.Left="6" Canvas.Top="115" Width="59" Height="22" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+        </Canvas>
+
+        <!-- ================= ОТДЕЛЬНЫЙ БЛОК: СМЕЩЕНИЕ ГРУППЫ ================= -->
+        <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness="0,1,0,0" Padding="0,15,0,0" Margin="20,0,20,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <UIControls:WpfFilterCheckBox AttributeName="SpliceBolt_Offset" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                <Label Content="Смещение болтовой группы:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBox Text="{Binding SpliceBolt_Offset}" Width="60" Height="22" HorizontalContentAlignment="Center" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+    </Grid>
+</UserControl>
